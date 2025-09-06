@@ -1,0 +1,279 @@
+.header {
+  display: flex;
+  justify-content: space-between; /* Esto separa logo y user-menu */
+  align-items: center;
+  width: 100%;
+  background-color: #eaeaea;
+  color: #1a1a1a;
+  min-height: 60px;
+  height: auto;
+  padding: 10px 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  z-index: 1000;
+  position: sticky;
+  top: 0;
+  transition: transform 0.3s ease-in-out;
+}
+
+.logo {
+    height: 70px;
+  margin: 0;
+  display: flex;
+  align-self: center;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100vh;
+  background-color: rgba(247, 247, 247, .97);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  transition: left 0.4s ease-in-out;
+  z-index: 1000;
+}
+
+/* Cuando el menú está activo, se muestra */
+.nav-links.activo {
+  left: 0;
+  /* Lo trae a la vista */
+}
+
+
+/* Animación del ícono de hamburguesa a una 'X' */
+.hamburger.activo span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.activo span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.activo span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+.nav-link {
+
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: .5rem 3rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #d4af37;
+}
+
+/* Botón de hamburguesa: inicialmente oculto en escritorio */
+.hamburger {
+  display: block;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+  /* Asegura que esté por encima de otros elementos */
+}
+
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: #333;
+  margin: 5px 0;
+  transition: all 0.3s ease-in-out;
+}
+.hamburger:hover span {
+  background-color: #d4af37;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  /* Necesario para el posicionamiento de la barra */
+  margin: 5px 10px;
+  /* Margen para separación */
+  gap: 10px;
+  /* Espacio entre el botón y la barra de búsqueda */
+}
+
+.search-bar {
+  width: 0;
+  padding: 8px 10px;
+  /* Ajustar padding */
+  border: 1px solid #ccc;
+  /* Borde más sutil */
+  border-radius: 25px;
+  outline: none;
+  transition: width 0.4s ease-in-out, opacity 0.4s ease-in-out, visibility 0s 0.4s;
+  /* Sincronizar transiciones */
+  opacity: 0;
+  visibility: hidden;
+  background-color: #f0f0f0;
+  /* Fondo para la barra */
+  color: #333;
+  /* Color de texto */
+  position: absolute;
+  right: 0;
+  z-index: 10;
+}
+
+.search-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25em;
+  /* Ajustar tamaño */
+  color: rgb(26, 26, 26);
+
+  padding: 5px;
+  /* Añadir padding para mejor clic */
+  transition: transform 0.4s ease-in-out, color 0.3s ease;
+  z-index: 10;
+}
+
+.search-button:hover {
+  color: #d4af37;
+}
+
+.search-container.active .search-bar {
+  width: 200px;
+  opacity: 1;
+  visibility: visible;
+  transition: width 0.4s ease-in-out, opacity 0.4s ease-in-out, visibility 0s 0s;
+}
+
+.search-container.active .search-button {
+  transform: rotate(360deg);
+  /* Rotar el botón al activar la búsqueda */
+  color: #ccc;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  /* Quita margin-left: auto y margin-right: 0 */
+}
+
+.user-link {
+  color: #1a1a1a;
+  font-size: 1.2em;
+  text-decoration: none;
+  background: none;
+  padding: 0 4px;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+  position: relative;
+}
+.user-link:hover {
+  color: #d4af37;
+  /* Cambia el color al pasar el mouse */
+}
+.user-link .fa-shopping-cart {
+  font-size: 1.2em;
+  transition: color 0.3s;
+}
+
+.user-link:hover .fa-shopping-cart {
+  color: #d4af37;
+}
+
+/* Opcional: badge para cantidad de pedidos temporales */
+.user-link .cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #d4af37;
+  color: #fff;
+  font-size: 0.7em;
+  border-radius: 50%;
+  padding: 1px 5px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.suggestions-list{
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  min-width: 200px;
+  gap: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+.suggestion-item{
+  padding: 5px 10px;
+  width: 100%;
+  cursor: pointer;
+  list-style:none ;
+  transition: background-color 0.3s ease;
+}
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+/* Estilos para pantallas pequeñas (móviles) */
+@media (max-width: 768px) {
+.search-container{
+  align-self: flex-end;
+}
+  .nav-links {
+    /* Oculta el menú y lo posiciona fuera de la pantalla */
+    position: fixed;
+    top: 0;
+    right: -100%;
+    /* Empieza fuera de la vista */
+    padding: 1rem;
+    width: 70%;
+    height: 100vh;
+    background-color: #f8f9fa;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 2rem;
+    transition: right 0.4s ease-in-out;
+  }
+
+  /* Cuando el menú está activo, se muestra */
+  .nav-links.activo {
+    right: 0;
+    /* Lo trae a la vista */
+  }
+
+  /* Muestra el botón de hamburguesa en móviles */
+  .hamburger {
+    display: block;
+  }
+
+  /* Animación del endícono de hamburguesa a una 'X' */
+  .hamburger.activo span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .hamburger.activo span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.activo span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
+
+}

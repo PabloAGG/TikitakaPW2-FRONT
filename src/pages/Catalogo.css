@@ -1,0 +1,159 @@
+/* frontend/src/pages/Catalogo.css */
+
+.catalogo-container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 2rem;
+    padding: 2rem;
+    align-items: flex-start;
+}
+
+/* --- Sidebar (columna izquierda) --- */
+.catalogo-sidebar {
+    flex: 1;
+    min-width: 200px;
+    max-width: 250px;
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* --- MEJORA 1: Transición para ocultar/mostrar --- */
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.catalogo-sidebar h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.marcas-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.marca-item button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    color: #555;
+}
+
+.marca-item button:hover {
+    color: #1a1a1a;
+}
+
+.marca-item.active > button {
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.genero-submenu {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
+
+.marca-item.active .genero-submenu {
+   max-height: 200px;
+}
+
+.genero-submenu button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* --- Main Content (columna derecha) --- */
+.catalogo-main {
+    flex: 3;
+    min-width: 300px;
+}
+
+.perfume-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.catalogo-mensaje {
+    font-size: 1.2rem;
+    color: #777;
+    text-align: center;
+    margin-top: 4rem;
+}
+
+
+/* --- MEJORA 1: ESTILOS PARA MÓVIL --- */
+
+/* Botón para mostrar/ocultar el menú */
+.sidebar-toggle-button {
+    display: none; /* Oculto por defecto */
+    width: 100%;
+    padding: 0.75rem;
+    color: #1a1a1a;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .catalogo-container {
+        flex-direction: column;
+    }
+
+    .sidebar-toggle-button {
+        display: block; /* Visible solo en móvil */
+        position: sticky;
+    }
+    .sidebar-toggle-button:hover {
+        background-color: #f0f0f0; /* Cambia el fondo al pasar el mouse */
+      color: #d4af37; /* Cambia el fondo al pasar el mouse */
+    }
+
+    .catalogo-sidebar {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 0; /* Quitamos margen para que se vea mejor al ocultar */
+        padding: 0 1.5rem; /* Ajustamos padding cuando está oculto */
+        border: none; /* Quitamos bordes para que se vea más limpio */
+        box-shadow: none;
+        overflow-y: scroll;
+    }
+    
+    /* Clase para ocultar la sidebar en móvil */
+    .catalogo-sidebar.sidebar-hidden {
+        max-height: 0;
+        padding: 0 1.5rem;
+        border: none;
+        overflow: hidden;
+    }
+
+    /* Cuando está abierta, le devolvemos sus estilos */
+    .catalogo-sidebar:not(.sidebar-hidden) {
+        max-height: 1000px; /* Un valor grande para permitir expansión */
+        padding: 1.5rem;
+        border: 1px solid #eee;
+        margin-bottom: 1rem; /* Añadimos margen solo si está abierta */
+    }
+}

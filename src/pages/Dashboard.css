@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap');
+.dashboard {
+  padding: 20px;
+  text-align: center;
+}
+.dashboard h1{
+    font-family: "Cinzel",serif;
+    font-size: 2.5em;}
+.marca-section {
+  margin-bottom: 40px;
+}
+
+.marca-title {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.perfume-list {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  overflow-x: scroll; /* Evita el desbordamiento horizontal */
+  justify-content: flex-start; /* O flex-start si prefieres alineado a la izquierda */
+  gap: 10px; /* Espacio entre tarjetas */
+  margin-left: 5px;
+  scrollbar-width: none; /* Para navegadores Firefox */
+   scroll-behavior: smooth;
+    -ms-overflow-style: none; /* IE and Edge */
+padding-left:50px;
+}
+
+.perfume-list::-webkit-scrollbar {
+  display: none; 
+}
+
+.perfume-list-seccion {
+position: relative; /* Para posicionar los botones de navegación */
+    max-width: 95vw;
+    padding: 0px;
+    margin: 0 auto;
+    z-index: 1;
+}
+

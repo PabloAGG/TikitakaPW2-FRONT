@@ -1,0 +1,70 @@
+.error-message {
+  color: rgb(255, 0, 0);
+  background-color: rgb(246, 205, 205);
+}
+
+.success-message {
+  color: rgb(0, 128, 0);
+  background-color: rgb(205, 246, 205);
+}
+.alert-overlay {
+    position: fixed; /* Cambiado de absolute a fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: none;
+    display: flex;
+    align-items: center;
+    padding: 50px 0 0 0;
+    z-index: 9999; /* Z-index muy alto para estar encima de todo */
+}
+
+.alert-message {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 90vw; /* Responsive */
+    min-width: 300px;
+    text-align: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.confirm-message {
+  color: rgb(28, 28, 28);
+  background-color: rgb(197, 197, 197);
+  border-left: 4px solid #f39c12;
+}
+
+.alert-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.alert-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.confirm-btn {
+    background-color: #168e46;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #164428;
+}
+
+.cancel-btn {
+    background-color: #b72525;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #b10c0c;
+}
