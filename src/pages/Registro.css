@@ -9,7 +9,7 @@
     padding-top: 20px;
 }
 .logo-sesion{
-    width: 80px;
+    width: auto;
     height: 80px;
     margin-bottom: 20px;
 }
@@ -86,3 +86,4 @@ form{
 .login-link a:hover{
     text-decoration: underline;
 }
+

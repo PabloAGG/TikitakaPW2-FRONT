@@ -8,9 +8,16 @@
     height: 100%;
 }
 .logo-sesion{
-    width: 80px;
+    width: auto;
     height: 80px;
     margin-bottom: 20px;
+}
+.textLogin{
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 5px;
+    text-align: center;
+    max-width: 300px;
 }
 form{
     width: 100%;

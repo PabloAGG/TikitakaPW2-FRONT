@@ -4,6 +4,7 @@ import './Registro.css';
 import API_URL from '../config/api';
 import Loading from '../componentes/loading';
 import AlertMsg from '../componentes/AlertMsg';
+import { use } from 'react';
 const Registro = () => {
   const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
@@ -15,8 +16,28 @@ const Registro = () => {
 const [telError, setTelError] = useState('');
     const [PassError, setPassError] = useState('');
 const [PassCError, setPassCError] = useState('');
+const [correo, setCorreo] = useState('');
+const [correoError, setCorreoError] = useState('');
+const [seleccion, setSeleccion] = useState('');
+const [seleccionError, setSeleccionError] = useState('');
+  const [seleccionesObtenidas, setSeleccionesObtenidas] = useState([]);
 const navigate = useNavigate();
 
+useEffect(() => {
+    try {
+        fetch(`${API_URL}/api/selecciones`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Selecciones obtenidas:', data);
+                setSeleccionesObtenidas(data);
+            })
+            .catch(error => {
+                console.error('Error al obtener selecciones:', error);
+            }); 
+    } catch (error) {
+        console.error('Error en la petición de selecciones:', error);
+    }   
+}, []);
 
    const handleTelChange = (e) => {
         const value = e.target.value;
@@ -53,6 +74,26 @@ const navigate = useNavigate();
             setPassCError('');
         }
     }
+    const handleCorreoChange = (e) => {
+        const value = e.target.value;
+        setCorreo(value);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            setCorreoError('Correo inválido.');
+        } else {
+            setCorreoError('');
+        }
+    };
+    const handleSeleccionChange = (e) => {
+        const value = e.target.value;
+        setSeleccion(value);
+        if (!value) {
+            setSeleccionError('Debes seleccionar una opción.');
+        } else {
+            setSeleccionError('');
+        }
+    };
+
     useEffect(() => {
         if (telError) {
             const timer = setTimeout(() => setTelError(''), 2000);
@@ -73,6 +114,25 @@ const navigate = useNavigate();
             return () => clearTimeout(timer);
         }
     }, [PassCError]);
+    useEffect(() => {
+        if (correoError) {   
+            const timer = setTimeout(() => setCorreoError(''), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [correoError]);
+    useEffect(() => {
+        if (seleccionError) {   
+            const timer = setTimeout(() => setSeleccionError(''), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [seleccionError]);
+
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => setError(null), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
 
 const handleSubmit = async (e) => {
     e.preventDefault();
@@ -83,7 +143,7 @@ const handleSubmit = async (e) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nombre, apellidos:apellido, telefono, contraseña:password }),
+        body: JSON.stringify({ nombre, apellidos:apellido, telefono, contraseña:password,correo,seleccion }),
       });
 
       if (!response.ok) {
@@ -92,7 +152,7 @@ const handleSubmit = async (e) => {
 
       const data = await response.json();
       console.log('Registro exitoso');
-      localStorage.setItem('token', data.token);
+
       navigate('/login', {state:{success:'¡Registro exitoso! Inicia Sesion'}}); // Redirige al usuario a la página principal después de registrarse
     } catch (error) {
       console.error('Error:', error);
@@ -136,6 +196,18 @@ setError('Error al registrar usuario. Por favor, inténtalo de nuevo.');
             </div>
             </div>
             <div className="form-group">
+                <label htmlFor="correo">Correo:</label>
+                <input
+                className='perfume-input'
+                type="email"
+                id="correo"
+                value={correo}
+                onChange={handleCorreoChange}
+                required
+                />
+                       {correoError && <span className='field-error'>{correoError}</span>}
+            </div>
+            <div className="form-group">
                 <label htmlFor="telefono">Teléfono:</label>
                 <input
                 className='perfume-input'
@@ -171,6 +243,23 @@ setError('Error al registrar usuario. Por favor, inténtalo de nuevo.');
                 />
                        {PassCError && <span className='field-error'>{PassCError}</span>}
             </div>
+            <div className="form-group">
+                <label htmlFor="Seleccion">Tu Seleccion:</label>
+                <select
+                className='perfume-input'
+                id="seleccion"
+                value={seleccion}
+                onChange={handleSeleccionChange}
+                required
+                >
+                   <option value="">Selecciona una opción</option>
+                     {seleccionesObtenidas.map((sel) => (
+                        <option key={sel.idSelec} value={sel.idSelec}>{sel.Nombre}</option>
+                    ))}
+               </select>
+                       {seleccionError && <span className='field-error'>{seleccionError}</span>}
+            </div>
+
             <button className='perfume-button' type="submit">Registrate</button>
             {error && (
               <AlertMsg message={error} type="error" />

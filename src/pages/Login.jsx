@@ -6,11 +6,12 @@ import Loading from '../componentes/loading';
 import AlertMsg from '../componentes/AlertMsg';
 const Login = () => {   
 const navigate = useNavigate();
-    const [Tel, setTel] = useState('');
+    const [correo, setCorreo] = useState('');
+const [correoError, setCorreoError] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 const [error, setError] = useState(null);
-   const [telError, setTelError] = useState('');
+  
     const [passwordError, setPasswordError] = useState('');
 const location = useLocation();
 const successMessage = location.state?.success || null;
@@ -40,19 +41,7 @@ useEffect(() => {
     }, [error]);
 
     // Validación en tiempo real para teléfono
-    const handleTelChange = (e) => {
-        const value = e.target.value;
-        setTel(value);
-        if (/\D/.test(value)) {
-      setTelError('El teléfono solo debe contener dígitos.');
 
-    } else if (value.length > 0 && value.length !== 10) {
-        setTelError('El teléfono debe tener 10 dígitos.');
-    }
-  else{
-            setTelError('');
-        }
-    };
 
     // Validación en tiempo real para contraseña
     const handlePasswordChange = (e) => {
@@ -64,13 +53,17 @@ useEffect(() => {
             setPasswordError('');
         }
     };
-
-    useEffect(() => {
-        if (telError) {
-            const timer = setTimeout(() => setTelError(''), 2000);
-            return () => clearTimeout(timer);
+    const handleCorreoChange = (e) => {
+        const value = e.target.value;
+        setCorreo(value);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            setCorreoError('Por favor, ingresa un correo electrónico válido.');
+        } else {
+            setCorreoError('');
         }
-    }, [telError]);
+    };
+
 
     // Desaparecer error de contraseña tras 2 segundos de inactividad
     useEffect(() => {
@@ -80,9 +73,16 @@ useEffect(() => {
         }
     }, [passwordError]);
 
+    useEffect(() => {
+        if (correoError) {
+            const timer = setTimeout(() => setCorreoError(''), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [correoError]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-           if (telError || passwordError || !Tel || !password) {
+           if (correoError || passwordError || !correo || !password) {
             setError('Corrige los errores antes de continuar.');
             return;
         }
@@ -94,7 +94,7 @@ useEffect(() => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ telefono:Tel, contraseña:password }),
+                body: JSON.stringify({ correo, contraseña:password }),
             });
 
             if (!response.ok) {
@@ -130,18 +130,19 @@ return (
     )}
          <img className='logo-sesion' src="/IMG/logo.png" alt="" />
             <form onSubmit={handleSubmit}>
-              <h2>Inicia Sesión</h2>  
+              <h2>Inicia Sesión </h2>
+              <p className='textLogin'>Obten acceso a los mejores coleccionables del mundial</p>  
                <div className="form-group">
-                    <label htmlFor="telefono">Teléfono:</label>
+                    <label htmlFor="correo">Correo:</label>
                     <input
                         className='perfume-input'
-                        type="tel"
-                        id="telefono"
-                        value={Tel}
-                        onChange={handleTelChange}
+                        type="email"
+                        id="correo"
+                        value={correo}
+                        onChange={handleCorreoChange}
                         required
                     />
-                    {telError && <span className='field-error'>{telError}</span>}
+                    {correoError && <span className='field-error'>{correoError}</span>}
                 </div>
                 <div className="form-group">
                     <label htmlFor="contraseña">Contraseña:</label>

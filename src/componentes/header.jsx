@@ -11,14 +11,35 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
-  const userSesion = localStorage.getItem('token'); // Verifica si hay un token de sesión
+  let user = null;
+  let userSesion = localStorage.getItem('token');
+
+  try {
+    if (userSesion) {
+      user = jwtDecode(userSesion);
+      // Verifica si el token ha expirado
+      if (user.exp && user.exp < Date.now() / 1000) {
+        localStorage.removeItem('token');
+        userSesion = null;
+        user = null;
+      }
+    }
+  } catch (error) {
+    console.error('Token inválido:', error);
+    localStorage.removeItem('token');
+    userSesion = null;
+    user = null;
+  }
+
   const menuRef = useRef(null);
-const user = userSesion ? jwtDecode(userSesion):null; 
+  const hamburgerRef = useRef(null);
   useEffect(() => {
     if (!menuAbierto) return;
 
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      // Verifica que el click no sea en el menú ni en el botón hamburguesa
+      if (menuRef.current && !menuRef.current.contains(event.target) &&
+          hamburgerRef.current && !hamburgerRef.current.contains(event.target)) {
         setMenuAbierto(false);
       }
     };
@@ -78,7 +99,7 @@ const user = userSesion ? jwtDecode(userSesion):null;
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      // Redirige a la página de búsqueda con query param
+      // Redirige a la página de búsqueda with query param
       navigate(`/busqueda/${encodeURIComponent(searchTerm)}`);
 
       setSuggestions([]); // Limpia las sugerencias
@@ -131,11 +152,13 @@ const user = userSesion ? jwtDecode(userSesion):null;
     <header className="header">
 
       <button
+        ref={hamburgerRef}
         className={`hamburger ${menuAbierto ? 'activo' : ''}`}
         onClick={toggleMenu}
         aria-label="Menú de navegación"
         aria-expanded={menuAbierto}
         title="Menú"
+
       >
         <span />
         <span />
@@ -145,7 +168,7 @@ const user = userSesion ? jwtDecode(userSesion):null;
 
       <nav ref={menuRef} className={`nav-links ${menuAbierto ? 'activo' : ''}`}>
         {isMobile && menuAbierto && searchbarComponent}
-        <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}><i className="fa-solid fa-spray-can-sparkles"></i> Inicio</Link>
+        <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}><i className="fa-solid fa-house"></i> Inicio</Link>
         <Link to="/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}><i className="fa-solid fa-layer-group"></i> Catalogo</Link>
         {userSesion && user.admin && (  
           <>
@@ -153,7 +176,7 @@ const user = userSesion ? jwtDecode(userSesion):null;
  <i className="fas fa-cogs"></i> Administar Catálogo
 </Link>
 <Link to="/admin/crear" className="nav-link" onClick={() => setMenuAbierto(false)}>
-            <i className="fas fa-plus"></i> Crear Perfume
+            <i className="fas fa-plus"></i> Subir Producto
           </Link>
           
           </>

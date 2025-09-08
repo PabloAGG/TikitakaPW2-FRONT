@@ -3,8 +3,8 @@
   justify-content: space-between; /* Esto separa logo y user-menu */
   align-items: center;
   width: 100%;
-  background-color: #eaeaea;
-  color: #1a1a1a;
+  background-color: #3229d3;
+  color: #ece8e8;
   min-height: 60px;
   height: auto;
   padding: 10px 15px;
@@ -31,7 +31,7 @@
   left: -100%;
   width: 50%;
   height: 100vh;
-  background-color: rgba(247, 247, 247, .97);
+  background-color: #3229d3;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -63,7 +63,7 @@
 .nav-link {
 
   text-decoration: none;
-  color: #333;
+  color: #f6f0f0;
   font-weight: bold;
   font-size: 1.2rem;
   padding: .5rem 3rem;
@@ -89,7 +89,7 @@
   display: block;
   width: 25px;
   height: 3px;
-  background-color: #333;
+  background-color: #eee7e7;
   margin: 5px 0;
   transition: all 0.3s ease-in-out;
 }
@@ -135,7 +135,7 @@
   cursor: pointer;
   font-size: 1.25em;
   /* Ajustar tamaño */
-  color: rgb(26, 26, 26);
+  color: rgb(249, 245, 245);
 
   padding: 5px;
   /* Añadir padding para mejor clic */
@@ -169,7 +169,7 @@
 }
 
 .user-link {
-  color: #1a1a1a;
+  color: #f5efef;
   font-size: 1.2em;
   text-decoration: none;
   background: none;

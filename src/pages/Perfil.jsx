@@ -151,7 +151,7 @@ const Perfil = () => {
             if (data) {
                 setNombre(data.nombre || '');
                 setApellido(data.apellidos || '');
-                setTelefono(data.telefono || '');
+                setTelefono(data.telf || '');
                 setPassword('');
                 setPasswordConfirm('');
                 setChangePassword(false);
@@ -190,7 +190,7 @@ const Perfil = () => {
                 const data = await response.json();
                 setNombre(data.nombre || '');
                 setApellido(data.apellidos || '');
-                setTelefono(data.telefono || '');
+                setTelefono(data.telf || '');
             } catch (err) {
                         localStorage.removeItem('token');
                         navigate('/login', { state: { error: 'Sesión expirada. Por favor, inicia sesión nuevamente.' } });
