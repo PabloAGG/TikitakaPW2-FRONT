@@ -4,7 +4,6 @@ import './Registro.css';
 import API_URL from '../config/api';
 import Loading from '../componentes/loading';
 import AlertMsg from '../componentes/AlertMsg';
-import { use } from 'react';
 const Registro = () => {
   const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
