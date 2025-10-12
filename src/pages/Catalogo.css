@@ -19,7 +19,31 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     /* --- MEJORA 1: Transición para ocultar/mostrar --- */
     transition: all 0.3s ease-in-out;
-    overflow: hidden;
+}
+
+/* Botón para crear producto (solo admin) */
+.crear-producto-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.crear-producto-btn:hover {
+    background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
 .catalogo-sidebar h2 {

@@ -169,7 +169,12 @@ const Header = () => {
       <nav ref={menuRef} className={`nav-links ${menuAbierto ? 'activo' : ''}`}>
         {isMobile && menuAbierto && searchbarComponent}
         <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}><i className="fa-solid fa-house"></i> Inicio</Link>
+        { !user.admin && (
+          <>
         <Link to="/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}><i className="fa-solid fa-layer-group"></i> Catalogo</Link>
+        </>
+        )}
+        
         {userSesion && user.admin && (  
           <>
           <Link to="/admin/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}>

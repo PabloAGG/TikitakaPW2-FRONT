@@ -3,16 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react'; // 1. Importa useRef
 import { useLocation,useNavigate} from 'react-router-dom';
 import API_URL from '../config/api';
-import PerfumeCard from '../componentes/PerfumeCard';
+import ProductoCard from '../componentes/PerfumeCard';
 import Loading from '../componentes/loading';
 import './Catalogo.css';
 import AlertMsg from '../componentes/AlertMsg';
 
 const Catalogo = ({isAdmin=false}) => {
-    const [perfumesPorMarca, setPerfumesPorMarca] = useState({});
-    const [marcasOrdenadas, setMarcasOrdenadas] = useState([]);
+    const [productosPorSeleccion, setProductosPorSeleccion] = useState({});
+    const [seleccionesOrdenadas, setSeleccionesOrdenadas] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [marcaSeleccionada, setMarcaSeleccionada] = useState(null);
+    const [seleccionSeleccionada, setSeleccionSeleccionada] = useState(null);
     const [generoSeleccionado, setGeneroSeleccionado] = useState(null);
 const location = useLocation();
     const successMessage = location.state?.success || null;
@@ -34,35 +34,35 @@ useEffect(() => {
         }
     }, [successMessage]);
     useEffect(() => {
-        const fetchPerfumes = async () => {
+        const fetchProductos = async () => {
             try {
                    setLoading(true);
-                const response = await fetch(`${API_URL}/api/perfumes`);
+                const response = await fetch(`${API_URL}/api/productos`);
                 const data = await response.json();
 
-                // Agrupamos los perfumes por marca
-                const agrupados = data.reduce((acc, perfume) => {
-                    // La API ya nos da el nombre de la marca como 'marcap'
-                    const marca = perfume.marcap;
-                    if (!acc[marca]) {
-                        acc[marca] = [];
+                // Agrupamos los productos por selección
+                const agrupados = data.reduce((acc, producto) => {
+                    // La API ya nos da el nombre de la selección como 'seleccionNombre'
+                    const seleccion = producto.seleccionnombre || 'Sin selección';
+                    if (!acc[seleccion]) {
+                        acc[seleccion] = [];
                     }
-                    acc[marca].push(perfume);
+                    acc[seleccion].push(producto);
                     return acc;
                 }, {});
 
                
-    const marcasOrdenadas = Object.keys(agrupados).sort();
-    setPerfumesPorMarca(agrupados);
-    setMarcasOrdenadas(marcasOrdenadas);
+    const seleccionesOrdenadas = Object.keys(agrupados).sort();
+    setProductosPorSeleccion(agrupados);
+    setSeleccionesOrdenadas(seleccionesOrdenadas);
     setLoading(false);
 
             } catch (error) {
-                console.error("Error al obtener los perfumes:", error);
+                console.error("Error al obtener los productos:", error);
             }
         };
 
-        fetchPerfumes();
+        fetchProductos();
 
         // Listener para redimensionar la pantalla
         const handleResize = () => {
@@ -80,8 +80,8 @@ useEffect(() => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleMarcaClick = (marca) => {
-        setMarcaSeleccionada(prevMarca => (prevMarca === marca ? null : marca));
+    const handleSeleccionClick = (seleccion) => {
+        setSeleccionSeleccionada(prevSeleccion => (prevSeleccion === seleccion ? null : seleccion));
         setGeneroSeleccionado(null);
 
         // --- MEJORA 2: Lógica de scroll ---
@@ -100,16 +100,16 @@ useEffect(() => {
         setGeneroSeleccionado(prevGenero => (prevGenero === genero ? null : genero));
     };
     
-    const getPerfumesFiltrados = () => {
-        if (!marcaSeleccionada) return [];
-        let perfumes = perfumesPorMarca[marcaSeleccionada];
+    const getProductosFiltrados = () => {
+        if (!seleccionSeleccionada) return [];
+        let productos = productosPorSeleccion[seleccionSeleccionada];
         if (generoSeleccionado) {
-            perfumes = perfumes.filter(p => p.genero === generoSeleccionado);
+            productos = productos.filter(p => p.genero === generoSeleccionado);
         }
-        return perfumes;
+        return productos;
     };
 
-    const perfumesAMostrar = getPerfumesFiltrados();
+    const productosAMostrar = getProductosFiltrados();
 
     if (loading) {
         return <Loading />;
@@ -130,27 +130,34 @@ useEffect(() => {
                     className="sidebar-toggle-button" 
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 >
-                    {isSidebarOpen ? 'Ocultar Marcas' : 'Mostrar Marcas'}
+                    {isSidebarOpen ? 'Ocultar Selecciones' : 'Mostrar Selecciones'}
                 </button>
             )}
 
             <aside className={`catalogo-sidebar ${!isSidebarOpen ? 'sidebar-hidden' : ''}`}>
-                <h2>Marcas</h2>
+                <h2>Selecciones</h2>
+                {isAdmin && (
+                    <button 
+                        className="crear-producto-btn"
+                        onClick={() => navigate('/admin/crear')}
+                    >
+                        + Crear Producto
+                    </button>
+                )}
                 <ul className="marcas-list">
-                    {marcasOrdenadas.map(marca => (
-                        <li key={marca} className={`marca-item ${marcaSeleccionada === marca ? 'active' : ''}`}>
-                            <button onClick={() => handleMarcaClick(marca)}>{marca}</button>
-                            {marcaSeleccionada === marca && (
+                    {seleccionesOrdenadas.map(seleccion => (
+                        <li key={seleccion} className={`marca-item ${seleccionSeleccionada === seleccion ? 'active' : ''}`}>
+                            <button onClick={() => handleSeleccionClick(seleccion)}>{seleccion}</button>
+                            {seleccionSeleccionada === seleccion && (
                                 <ul className="genero-submenu">
-                                    <li className={generoSeleccionado === 'Masculino' ? 'active-genero' : ''}>
+                                    <li className={generoSeleccionado === 'masculino' ? 'active-genero' : ''}>
                                         <button onClick={() => handleGeneroClick('masculino')}>Masculino</button>
                                     </li>
-                                    <li className={generoSeleccionado === 'Femenino' ? 'active-genero' : ''}>
+                                    <li className={generoSeleccionado === 'femenino' ? 'active-genero' : ''}>
                                         <button onClick={() => handleGeneroClick('femenino')}>Femenino</button>
                                     </li>
-                                    <li className={generoSeleccionado === 'Unisex' ? 'active-genero' : ''}>
-                                        <button onClick={() => handleGeneroClick('unisex')}>Unisex</
-button>
+                                    <li className={generoSeleccionado === 'unisex' ? 'active-genero' : ''}>
+                                        <button onClick={() => handleGeneroClick('unisex')}>Unisex</button>
                                     </li>
                                 </ul>
                             )}
@@ -161,19 +168,19 @@ button>
 
             {/* --- MEJORA 2: Se añade la referencia aquí --- */}
             <main className="catalogo-main" ref={mainContentRef}>
-                 {isAdmin && <h1><i className="fas fa-cogs"></i> - Catálogo</h1>}
-                {marcaSeleccionada ? (
-                    perfumesAMostrar.length > 0 ? (
+                 {isAdmin && <h1><i className="fas fa-cogs"></i> - Catálogo de Productos</h1>}
+                {seleccionSeleccionada ? (
+                    productosAMostrar.length > 0 ? (
                         <div className="perfume-grid">
-                            {perfumesAMostrar.map(perfume => (
-                                <PerfumeCard key={perfume.idperfume} perfume={perfume} isAdmin={isAdmin} />
+                            {productosAMostrar.map(producto => (
+                                <ProductoCard key={producto.idProduct} producto={producto} isAdmin={isAdmin} />
                             ))}
                         </div>
                     ) : (
-                        <p className="catalogo-mensaje">No se encontraron perfumes para los filtros seleccionados.</p>
+                        <p className="catalogo-mensaje">No se encontraron productos para los filtros seleccionados.</p>
                     )
                 ) : (
-                    <p className="catalogo-mensaje">Selecciona una marca para ver los perfumes.</p>
+                    <p className="catalogo-mensaje">Selecciona una selección para ver los productos.</p>
                 )}
             </main>
         </div>

@@ -15,28 +15,43 @@ const Dashboard = () => {
             try {
                 // La URL de tu backend
                 setLoading(true);
-                const response = await fetch(`${API_URL}/api/perfumes`);
+                console.log('Obteniendo productos desde:', `${API_URL}/api/productos`);
+                const response = await fetch(`${API_URL}/api/productos`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('Datos recibidos:', data);
 
-                // Agrupamos los perfumes por marca
-                const agrupados = data.reduce((acc, perfume) => {
-                    // La API ya nos da el nombre de la marca como 'marcap'
-                    const marca = perfume.marcap;
-                    if (!acc[marca]) {
-                        acc[marca] = [];
+                // Verificar que data es un array
+                if (!Array.isArray(data)) {
+                    console.error('Los datos recibidos no son un array:', data);
+                    throw new Error('Formato de datos inválido');
+                }
+
+                // Agrupamos los productos por selección (no por marca)
+                const agrupados = data.reduce((acc, producto) => {
+                    // Usar selección en lugar de marca
+                    const seleccion = producto.seleccionnombre || 'Sin selección';
+                    if (!acc[seleccion]) {
+                        acc[seleccion] = [];
                     }
-                    acc[marca].push(perfume);
+                    acc[seleccion].push(producto);
                     return acc;
                 }, {});
 
                
-    const marcasOrdenadas = Object.keys(agrupados).sort();
-    setPerfumesPorMarca(agrupados);
-    setMarcasOrdenadas(marcasOrdenadas);
-    setLoading(false);
+                const marcasOrdenadas = Object.keys(agrupados).sort();
+                setPerfumesPorMarca(agrupados);
+                setMarcasOrdenadas(marcasOrdenadas);
+                setLoading(false);
 
             } catch (error) {
-                console.error("Error al obtener los perfumes:", error);
+                console.error("Error al obtener los productos:", error);
+                setLoading(false);
+                // Aquí podrías mostrar un mensaje de error al usuario
             }
         };
 
@@ -44,23 +59,23 @@ const Dashboard = () => {
     }, []); // El array vacío asegura que esto se ejecute solo una vez
 
     if (loading) return <Loading />; // Muestra el componente de carga mientras se obtienen los datos
-    if (Object.keys(marcasOrdenadas).length === 0) {
-        return <p>No hay perfumes disponibles.</p>;
+    if (marcasOrdenadas.length === 0) {
+        return <p>No hay productos disponibles.</p>;
     }
     return (
         <div className="dashboard">
-            <h1>Perfumes disponibles</h1>
+            <h1>Productos disponibles</h1>
 
-            {/* 1. Itera directamente sobre el arreglo de nombres de marcas */}
-            {marcasOrdenadas.map(marca => (
-                <div key={marca} className="marca-section">
-                    <h2 className="marca-title">{marca}</h2>
+            {/* 1. Itera directamente sobre el arreglo de nombres de selecciones */}
+            {marcasOrdenadas.map(seleccion => (
+                <div key={seleccion} className="marca-section">
+                    <h2 className="marca-title">{seleccion}</h2>
                     <div className="perfume-list-seccion">
                         <div className="perfume-list">
 
-                            {/* 2. Usa el objeto 'perfumesPorMarca' para obtener la lista de perfumes */}
-                            {perfumesPorMarca[marca].map(perfume => (
-                                <PerfumeCard key={perfume.idperfume} perfume={perfume} />
+                            {/* 2. Usa el objeto 'perfumesPorMarca' para obtener la lista de productos */}
+                            {perfumesPorMarca[seleccion].map(producto => (
+                                <PerfumeCard key={producto.idProduct} producto={producto} />
                             ))}
                         </div>
                     </div>

@@ -1,28 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './PerfumeEdit.css';
 import Loading from '../componentes/loading';
 import API_URL from '../config/api';
-import AlertMsg from '../componentes/AlertMsg'; 
+import AlertMsg from '../componentes/AlertMsg';
+import MultimediaUpload from '../componentes/MultimediaUpload'; 
 
-const PerfumeEdit = ({isCreating=false}) => {
+const ProductoEdit = ({isCreating=false}) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [alertInfo, setAlertInfo] = useState({ show: false, message: '', type: 'info', isConfirm: false });
-    const [perfume, setPerfume] = useState(null);
-    const [marcas, setMarcas] = useState([]);
+    const [producto, setProducto] = useState(null);
+    const [selecciones, setSelecciones] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [errors, setErrors] = useState({});
+    const [archivosSubidos, setArchivosSubidos] = useState([]);
+    const multimediaUploadRef = useRef(null);
  
     
     // Estados para los campos del formulario
     const [formData, setFormData] = useState({
         nombre: '',
-        marca: '',
+        seleccion: '',
         descripcion: '',
         genero: '',
-        clima: '',
         top: false
     });
 
@@ -33,40 +35,40 @@ const PerfumeEdit = ({isCreating=false}) => {
         return palabras.join(' ');
     };
 
-    // Cargar datos del perfume y marcas
+    // Cargar datos del producto y selecciones
     useEffect(() => {
         if (!isCreating){
         const fetchData = async () => {
             try {
                 setLoading(true);
                 
-                // Cargar perfume y marcas en paralelo
-                const [perfumeResponse, marcasResponse] = await Promise.all([
-                    fetch(`${API_URL}/api/perfume/${id}`),
-                    fetch(`${API_URL}/api/marcas`)
+                // Cargar producto y selecciones en paralelo
+                const [productoResponse, seleccionesResponse] = await Promise.all([
+                    fetch(`${API_URL}/api/producto/${id}`),
+                    fetch(`${API_URL}/api/selecciones`)
                 ]);
 
-                if (!perfumeResponse.ok) {
-                    throw new Error('Perfume no encontrado');
+                if (!productoResponse.ok) {
+                    throw new Error('Producto no encontrado');
                 }
-                if (!marcasResponse.ok) {
-                    throw new Error('Error al cargar marcas');
+                if (!seleccionesResponse.ok) {
+                    throw new Error('Error al cargar selecciones');
                 }
 
-                const perfumeData = await perfumeResponse.json();
-                const marcasData = await marcasResponse.json();
+                const productoData = await productoResponse.json();
+                const seleccionesData = await seleccionesResponse.json();
 
-                setPerfume(perfumeData);
-                setMarcas(marcasData);
+                setProducto(productoData);
+                setSelecciones(seleccionesData);
                 
                 // Llenar el formulario con los datos existentes
                 setFormData({
-                    nombre: perfumeData.nombre || '',
-                    marca: perfumeData.marca || '',
-                    descripcion: perfumeData.descripcion || '',
-                    genero: perfumeData.genero || '',
-                    clima: perfumeData.clima || '',
-                    top: perfumeData.top || false
+                    nombre: productoData.nombre || '',
+                    seleccion: productoData.seleccion || '',
+                    descripcion: productoData.descripcion || '',
+                    genero: productoData.genero || '',
+                    top: productoData.top || false,
+                    Img: productoData.Img || ''
                 });
 
             } catch (err) {
@@ -77,33 +79,32 @@ const PerfumeEdit = ({isCreating=false}) => {
         };
         fetchData();
     }   else {
-        const fetchMarcas = async () => {
+        const fetchSelecciones = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${API_URL}/api/marcas`);
+                const response = await fetch(`${API_URL}/api/selecciones`);
                 if (!response.ok) {
-                    throw new Error('Error al cargar marcas');
+                    throw new Error('Error al cargar selecciones');
                 }
-                const marcasData = await response.json();
-                setMarcas(marcasData);
+                const seleccionesData = await response.json();
+                setSelecciones(seleccionesData);
             } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchMarcas();
+        fetchSelecciones();
 
         setFormData({
             nombre: '', 
-            marca: '',
+            seleccion: '',
             descripcion: '',
             genero: '',
-            clima: '',
             top: false
         });
     }
-    }, [id]);
+    }, [id, isCreating]);
 
     // Manejar cambios en los inputs
     const handleInputChange = (e) => {
@@ -129,8 +130,8 @@ const PerfumeEdit = ({isCreating=false}) => {
         if (!formData.nombre.trim()) {
             newErrors.nombre = 'El nombre es requerido';
         }
-        if (!formData.marca) {
-            newErrors.marca = 'La marca es requerida';
+        if (!formData.seleccion) {
+            newErrors.seleccion = 'La selección es requerida';
         }
         if (!formData.genero) {
             newErrors.genero = 'El género es requerido';
@@ -149,27 +150,55 @@ const PerfumeEdit = ({isCreating=false}) => {
         }
 
         setLoading(true);
+        
+        // Obtener token para autenticación
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+
         if (!isCreating) {
         try {
-            const response = await fetch(`${API_URL}/api/perfume/${id}`, {
+            // 1. Actualizar el producto
+            const response = await fetch(`${API_URL}/api/producto/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers,
                 body: JSON.stringify(formData)
             });
 
             if (!response.ok) {
-                throw new Error('Error al actualizar el perfume');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al actualizar el producto');
             }
 
-                navigate('/admin/catalogo',{state: { success: 'Perfume actualizado correctamente.' } });
+            // 2. Si hay archivos nuevos subidos, reemplazar la multimedia
+            if (archivosSubidos.length > 0 && multimediaUploadRef.current) {
+                try {
+                    console.log('Reemplazando multimedia con:', archivosSubidos);
+                    await multimediaUploadRef.current.replaceAllMultimedia(archivosSubidos);
+                    console.log('Multimedia reemplazada exitosamente');
+                } catch (multimediaError) {
+                    console.error('Error al reemplazar multimedia:', multimediaError);
+                    // Mostrar advertencia pero no fallar el proceso
+                    setAlertInfo({
+                        show: true,
+                        message: 'Producto actualizado, pero hubo un problema con las imágenes. Inténtalo de nuevo.',
+                        type: 'warning',
+                        isConfirm: false
+                    });
+                    return; // No navegar si hay error con multimedia
+                }
+            }
+
+            navigate('/admin/catalogo',{state: { success: 'Producto actualizado correctamente.' } });
             
 
         } catch (error) {
             console.error('Error:', error);
             setAlertInfo({
-                message: 'Error al actualizar el perfume. Inténtalo de nuevo.',
+                show: true,
+                message: error.message || 'Error al actualizar el producto. Inténtalo de nuevo.',
                 type: 'error',
                 isConfirm: false
             });
@@ -178,26 +207,49 @@ const PerfumeEdit = ({isCreating=false}) => {
         }
     } else {
         try {
-            const response = await fetch(`${API_URL}/api/perfume`, {
+            console.log('Enviando datos del producto:', formData);
+            const response = await fetch(`${API_URL}/api/producto`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    img_path: 'default.jpg' // Asignar una imagen por defecto o manejarlo según tu lógica
-                })
+                headers,
+                body: JSON.stringify(formData)
             });
 
             if (!response.ok) {
-                throw new Error('Error al crear el perfume');
+                const errorData = await response.json();
+                console.error('Error del servidor:', errorData);
+                throw new Error(errorData.error || 'Error al crear el producto');
             }
 
-            navigate('/admin/catalogo',{state: { success: 'Perfume creado correctamente.' } });
+            const nuevoProducto = await response.json();
+            console.log('Producto creado exitosamente:', nuevoProducto);
+            
+            // Si hay archivos subidos, guardarlos en la base de datos
+            if (archivosSubidos.length > 0) {
+                try {
+                    await fetch(`${API_URL}/api/multimedia`, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({
+                            producto: nuevoProducto.idProduct,
+                            urls: archivosSubidos.map(archivo => ({
+                                url: archivo.url,
+                                tipo: archivo.tipo
+                            }))
+                        })
+                    });
+                    console.log('Multimedia guardada exitosamente');
+                } catch (multimediaError) {
+                    console.error('Error al guardar multimedia:', multimediaError);
+                    // No fallar el proceso completo por multimedia
+                }
+            }
+            
+            navigate('/admin/catalogo',{state: { success: 'Producto creado correctamente.' } });
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error completo:', error);
             setAlertInfo({
-                message: 'Error al crear el perfume. Inténtalo de nuevo.',
+                show: true,
+                message: error.message || 'Error al crear el producto. Inténtalo de nuevo.',
                 type: 'error',
                 isConfirm: false
             });
@@ -214,7 +266,7 @@ const PerfumeEdit = ({isCreating=false}) => {
 
     if (loading) return <Loading />;
     if (error) return <p>Error: {error}</p>;
-    if (!isCreating && !perfume) return <p>No se encontró el perfume.</p>;
+    if (!isCreating && !producto) return <p>No se encontró el producto.</p>;
 
     return (
         <div className='perfume-edit-container'>
@@ -227,18 +279,18 @@ const PerfumeEdit = ({isCreating=false}) => {
                     onCancel={cerrarAlert}
                 />
             )}
-            { !isCreating && (
+            { !isCreating && producto && (
             <div className='detail-image-container'>
                 <img 
-                    src={`/IMG/${perfume.genero}/${perfume.marcap}/${perfume.img_path}` || 'https://via.placeholder.com/150'} 
-                    alt={perfume.nombre} 
+                    src={`${producto.Img}`} 
+                    alt={producto.nombre} 
                 />
             </div>
             )}
             <div className='Edit-info-container'>
                 { !isCreating ? (
-                <h2>Editar Perfume</h2>
-): (<h2>Crear Perfume</h2>)}
+                <h2>Editar Producto</h2>
+): (<h2>Crear Producto</h2>)}
                 <form onSubmit={handleSubmit}>
                     <div className="form-row">
                         <div className="form-group">
@@ -256,23 +308,23 @@ const PerfumeEdit = ({isCreating=false}) => {
                         </div>
                         
                         <div className="form-group">
-                            <label htmlFor="marca">Marca:</label>
+                            <label htmlFor="seleccion">Selección:</label>
                             <select
                                 className='perfume-input'
-                                id="marca"
-                                name="marca"
-                                value={formData.marca}
+                                id="seleccion"
+                                name="seleccion"
+                                value={formData.seleccion}
                                 onChange={handleInputChange}
                                 required
                             >
-                                <option value="">Selecciona una marca</option>
-                                {marcas.map(marca => (
-                                    <option key={marca.idmarca} value={marca.idmarca}>
-                                        {marca.nombre}
+                                <option value="">Selecciona una selección</option>
+                                {selecciones.map(seleccion => (
+                                    <option key={seleccion.idSelec} value={seleccion.idSelec}>
+                                        {seleccion.Nombre}
                                     </option>
                                 ))}
                             </select>
-                            {errors.marca && <span className='field-error'>{errors.marca}</span>}
+                            {errors.seleccion && <span className='field-error'>{errors.seleccion}</span>}
                         </div>
                     </div>
 
@@ -294,24 +346,9 @@ const PerfumeEdit = ({isCreating=false}) => {
                             </select>
                             {errors.genero && <span className='field-error'>{errors.genero}</span>}
                         </div>
-
-                        <div className="form-group">
-                            <label htmlFor="clima">Clima:</label>
-                            <select
-                                className='perfume-input'
-                                id="clima"
-                                name="clima"
-                                value={formData.clima}
-                                onChange={handleInputChange}
-                            >
-                                <option value="">Selecciona un clima</option>
-                                <option value="Cálido">Cálido</option>
-                                <option value="Frío">Frío</option>
-                                <option value="Templado">Templado</option>
-                                <option value="Cualquiera">Cualquiera</option>
-                            </select>
-                        </div>
                     </div>
+
+
 
                     <div className="form-group">
                         <label htmlFor="descripcion">Descripción:</label>
@@ -333,8 +370,29 @@ const PerfumeEdit = ({isCreating=false}) => {
                                 checked={formData.top}
                                 onChange={handleInputChange}
                             />
-                            ¿Es un perfume destacado?
+                            ¿Es un Producto destacado?
                         </label>
+                    </div>
+
+                    {/* Componente de subida de multimedia */}
+                    <div className="form-group">
+                        <MultimediaUpload 
+                            ref={multimediaUploadRef}
+                            productoId={!isCreating ? id : null}
+                            replaceMode={!isCreating} // Modo reemplazo solo al editar
+                            onUploadComplete={(files) => {
+                                console.log('Archivos subidos:', files);
+                                // Acumular archivos tanto para crear como para editar
+                                setArchivosSubidos(prev => {
+                                    // Evitar duplicados comparando por URL
+                                    const nuevosArchivos = files.filter(nuevoArchivo => 
+                                        !prev.some(existente => existente.url === nuevoArchivo.url)
+                                    );
+                                    return [...prev, ...nuevosArchivos];
+                                });
+                            }}
+                            disabled={loading}
+                        />
                     </div>
 
                     <div className="form-buttons">
@@ -358,4 +416,4 @@ const PerfumeEdit = ({isCreating=false}) => {
     );
 };
 
-export default PerfumeEdit;
+export default ProductoEdit;

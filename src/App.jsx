@@ -9,14 +9,14 @@ import AdminRoute from './pages/AdminRoute'; // Importa la ruta protegida
 
 //imports dinamicos para lazy loading de componentes
 const Dashboard = lazy(()=> import('./pages/Dashboard'));
-const PerfumeDetail = lazy(()=>import('./pages/PerfumeDetail'));
+const ProductoDetail = lazy(()=>import('./pages/ProductoDetail'));
 const Busqueda = lazy(()=>import ('./pages/Busqueda') );
 const Catalogo =lazy(()=> import ('./pages/Catalogo'));
 const PedidosTemporales = lazy(()=> import ('./pages/pedidos'));
 const Login = lazy(()=> import ('./pages/Login'));
 const Registro = lazy(()=>import ('./pages/Registro'));
 const Perfil = lazy(()=>import ('./pages/Perfil'));
-const PerfumeEdit = lazy(()=>import ('./pages/PerfumeEdit'));
+const ProductoEdit = lazy(()=>import ('./pages/ProductoEdit'));
 function App() {
   
   return (
@@ -33,7 +33,7 @@ function App() {
     
           <Route path="/" element={<Dashboard />} />
            <Route path="/busqueda/:q" element={<Busqueda />} />
-          <Route path="/perfume/:id" element={<PerfumeDetail />} />
+          <Route path="/producto/:id" element={<ProductoDetail />} />
            <Route path="/catalogo" element={<Catalogo />} /> 
            <Route path='/admin/catalogo' element={
             <AdminRoute>
@@ -46,11 +46,11 @@ function App() {
          <Route path='/perfil' element={<Perfil/>} />
           <Route path='/admin/editar/:id' element={
             <AdminRoute>
-              <PerfumeEdit /></AdminRoute>
+              <ProductoEdit /></AdminRoute>
           }/>
           <Route path='/admin/crear' element={
             <AdminRoute>  
-              <PerfumeEdit isCreating={true} />
+              <ProductoEdit isCreating={true} />
             </AdminRoute>
           }/>
 
