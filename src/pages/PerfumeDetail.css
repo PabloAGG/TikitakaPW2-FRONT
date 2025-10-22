@@ -118,6 +118,42 @@
     font-weight: bold;
 }
 
+/* Estilos para la sección de calificaciones */
+.detail-rating {
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.user-rating-section {
+    background-color: #f8f9fa;
+    margin-top: 20px;
+}
+
+.user-rating-section .MuiRating-root {
+    color: #d4af37;
+}
+
+.user-rating-section .MuiButton-contained {
+    background-color: #1a1a1a;
+    color: white;
+    text-transform: none;
+    font-weight: 600;
+}
+
+.user-rating-section .MuiButton-contained:hover {
+    background-color: #d4af37;
+}
+
+.user-rating-section .MuiButton-contained:disabled {
+    background-color: #cccccc;
+    color: #666666;
+}
+
+.average-rating .MuiRating-root {
+    color: #d4af37;
+}
+
 
 @media (max-width: 768px) {
     .perfume-detail {
