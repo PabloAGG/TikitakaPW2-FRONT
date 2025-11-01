@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CloudinaryImage from './CloudinaryImage';
 import './MediaCarousel.css';
 
 const MediaCarousel = ({ multimedia, productName }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [multimedia]);
+
   if (!multimedia || multimedia.length === 0) {
     return (
       <div className="media-carousel no-media">
-        <img 
-          src={`https://via.placeholder.com/400x300?text=${encodeURIComponent(productName)}`} 
+        <img
+          src={`https://via.placeholder.com/400x300?text=${encodeURIComponent(productName)}`}
           alt={productName}
           className="carousel-media placeholder"
         />
@@ -19,15 +23,11 @@ const MediaCarousel = ({ multimedia, productName }) => {
   }
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? multimedia.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? multimedia.length - 1 : prevIndex - 1));
   };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === multimedia.length - 1 ? 0 : prevIndex + 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === multimedia.length - 1 ? 0 : prevIndex + 1));
   };
 
   const goToSlide = (index) => {
@@ -42,35 +42,36 @@ const MediaCarousel = ({ multimedia, productName }) => {
       <div className="carousel-main">
         <div className="carousel-container">
           {currentMedia.tipo === 'video' ? (
-            <video 
-              src={currentMedia.url} 
-              controls 
+            <video
+              src={currentMedia.url}
+              controls
               className="carousel-media"
               key={currentMedia.idmulti} // Force re-render when changing videos
             >
               Tu navegador no soporta videos.
             </video>
           ) : (
-            <CloudinaryImage 
+            <CloudinaryImage
               url={currentMedia.url}
               publicId={currentMedia.public_id}
               alt={`${productName} - imagen ${currentIndex + 1}`}
               className="carousel-media"
+              key={currentMedia.idmulti || currentMedia.url}
             />
           )}
-          
+
           {/* Controles de navegación (solo si hay más de 1 media) */}
           {multimedia.length > 1 && (
             <>
-              <button 
-                className="carousel-btn carousel-btn-prev" 
+              <button
+                className="carousel-btn carousel-btn-prev"
                 onClick={goToPrevious}
                 aria-label="Imagen anterior"
               >
                 ‹
               </button>
-              <button 
-                className="carousel-btn carousel-btn-next" 
+              <button
+                className="carousel-btn carousel-btn-next"
                 onClick={goToNext}
                 aria-label="Imagen siguiente"
               >
@@ -99,15 +100,11 @@ const MediaCarousel = ({ multimedia, productName }) => {
             >
               {media.tipo === 'video' ? (
                 <div className="thumbnail-video">
-                  <video 
-                    src={media.url} 
-                    className="thumbnail-media"
-                    muted
-                  />
+                  <video src={media.url} className="thumbnail-media" muted />
                   <div className="video-overlay">▶</div>
                 </div>
               ) : (
-                <CloudinaryImage 
+                <CloudinaryImage
                   url={media.url}
                   publicId={media.public_id}
                   alt={`${productName} thumbnail ${index + 1}`}
@@ -127,9 +124,7 @@ const MediaCarousel = ({ multimedia, productName }) => {
           {currentMedia.tipo === 'video' ? '🎥 Video' : '🖼️ Imagen'}
         </span>
         {currentMedia.format && (
-          <span className="media-format">
-            {currentMedia.format.toUpperCase()}
-          </span>
+          <span className="media-format">{currentMedia.format.toUpperCase()}</span>
         )}
       </div>
     </div>

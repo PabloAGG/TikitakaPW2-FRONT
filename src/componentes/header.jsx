@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import './header.css'; // Asegúrate de tener este archivo CSS
-import { useNavigate } from 'react-router-dom';
-import API_URL from '../config/api'; // Importa la URL de la API
 import { jwtDecode } from 'jwt-decode';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import API_URL from '../config/api'; // Importa la URL de la API
+import { useCart } from '../context/CartContext';
+import './header.css'; // Asegúrate de tener este archivo CSS
 const Header = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [searchbarVisible, setSearchbarVisible] = useState(false);
@@ -11,6 +11,7 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
+  const { totalItems } = useCart();
   let user = null;
   let userSesion = localStorage.getItem('token');
 
@@ -38,8 +39,12 @@ const Header = () => {
 
     const handleClickOutside = (event) => {
       // Verifica que el click no sea en el menú ni en el botón hamburguesa
-      if (menuRef.current && !menuRef.current.contains(event.target) &&
-          hamburgerRef.current && !hamburgerRef.current.contains(event.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        hamburgerRef.current &&
+        !hamburgerRef.current.contains(event.target)
+      ) {
         setMenuAbierto(false);
       }
     };
@@ -59,29 +64,29 @@ const Header = () => {
   };
   const toggleSearchbar = () => {
     setSearchbarVisible(!searchbarVisible);
-  }
+  };
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
     fetch(`${API_URL}/api/busqueda?q=${encodeURIComponent(value)}`)
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error('Error de red o servidor');
         return res.json();
       })
-      .then(data => {
+      .then((data) => {
         // Filtra los perfumes por nombre (ajusta según tu estructura de datos)
-        const filtered = data.filter(perfume =>
-          perfume.nombre.toLowerCase().includes(value.toLowerCase()) ||
-          perfume.marcap.toLowerCase().includes(value.toLowerCase()) // También filtra por marca
+        const filtered = data.filter(
+          (perfume) =>
+            perfume.nombre.toLowerCase().includes(value.toLowerCase()) ||
+            perfume.marcap.toLowerCase().includes(value.toLowerCase()) // También filtra por marca
         );
         setSuggestions(filtered.slice(0, 5)); // Máximo 5 sugerencias
       })
-      .catch(err => {
-        console.error("Error al buscar sugerencias:", err);
+      .catch((err) => {
+        console.error('Error al buscar sugerencias:', err);
         setSuggestions([]); // Limpia las sugerencias en caso de error
-      }
-      );
+      });
   };
 
   const handleSuggestionClick = (nombre) => {
@@ -92,10 +97,7 @@ const Header = () => {
     toggleSearchbar(); // Cierra la barra de búsqueda
     setMenuAbierto(false); // Cierra el menú si está abierto
     setSearchTerm(''); // Limpia el campo de búsqueda
-
   };
-
-
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -110,14 +112,13 @@ const Header = () => {
     }
   };
 
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     setMenuAbierto(false);
     setSearchbarVisible(false);
     navigate('/login');
     window.location.reload(); // <-- Fuerza recarga para actualizar el estado de userSesion
-  };// Redirige a la página de inicio
+  }; // Redirige a la página de inicio
 
   const searchbarComponent = (
     <div className={`search-container ${searchbarVisible ? 'active' : ''}`}>
@@ -130,7 +131,12 @@ const Header = () => {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
       />
-      <button className="search-button" aria-label="Buscar" onClick={toggleSearchbar} title='Buscar perfumes'>
+      <button
+        className="search-button"
+        aria-label="Buscar"
+        onClick={toggleSearchbar}
+        title="Buscar perfumes"
+      >
         <i className="fas fa-search"></i>
       </button>
       {suggestions.length > 0 && (
@@ -150,7 +156,6 @@ const Header = () => {
   );
   return (
     <header className="header">
-
       <button
         ref={hamburgerRef}
         className={`hamburger ${menuAbierto ? 'activo' : ''}`}
@@ -158,49 +163,48 @@ const Header = () => {
         aria-label="Menú de navegación"
         aria-expanded={menuAbierto}
         title="Menú"
-
       >
         <span />
         <span />
         <span />
       </button>
 
-
       <nav ref={menuRef} className={`nav-links ${menuAbierto ? 'activo' : ''}`}>
         {isMobile && menuAbierto && searchbarComponent}
-        <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}><i className="fa-solid fa-house"></i> Inicio</Link>
-        { user && !user.admin && (
+        <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}>
+          <i className="fa-solid fa-house"></i> Inicio
+        </Link>
+        {user && !user.admin && (
           <>
-        <Link to="/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}><i className="fa-solid fa-layer-group"></i> Catalogo</Link>
-        </>
+            <Link to="/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              <i className="fa-solid fa-layer-group"></i> Catalogo
+            </Link>
+          </>
         )}
         {!user && (
           <>
-          <Link to="/login" className="nav-link" onClick={() => setMenuAbierto(false)}>
-            <i className="fas fa-sign-in-alt"></i> Iniciar sesión
-          </Link>
+            <Link to="/login" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              <i className="fas fa-sign-in-alt"></i> Iniciar sesión
+            </Link>
           </>
-          )}
-        
-        {userSesion && user.admin && (  
-          <>
-          <Link to="/admin/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}>
- <i className="fas fa-cogs"></i> Administar Catálogo
-</Link>
-<Link to="/admin/crear" className="nav-link" onClick={() => setMenuAbierto(false)}>
-            <i className="fas fa-plus"></i> Subir Producto
-          </Link>
-          
-          </>
+        )}
 
-)}
+        {userSesion && user.admin && (
+          <>
+            <Link to="/admin/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              <i className="fas fa-cogs"></i> Administar Catálogo
+            </Link>
+            <Link to="/admin/crear" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              <i className="fas fa-plus"></i> Subir Producto
+            </Link>
+          </>
+        )}
         {userSesion && (
           <Link onClick={handleLogout} className="nav-link">
             <i className="fas fa-sign-out-alt"></i> Cerrar sesión
           </Link>
         )}
       </nav>
-
 
       <div className="logo-container">
         <Link to="/" className="logo-link">
@@ -209,7 +213,6 @@ const Header = () => {
       </div>
 
       <div className="user-menu">
-
         {!isMobile && searchbarComponent}
         {userSesion ? (
           <Link to="/perfil" className="user-link">
@@ -220,12 +223,10 @@ const Header = () => {
             <i className="fa-regular fa-user"></i>
           </Link>
         )}
-        <Link to="/pedidos" className="user-link">
+        <Link to="/pedidos" className="user-link cart-link">
           <i className="fas fa-shopping-cart"></i>
+          {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
         </Link>
-
-
-
       </div>
     </header>
   );

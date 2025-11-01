@@ -5,36 +5,36 @@
   justify-content: center;
   padding-bottom: 30px;
   width: 100%;
-    height: 100%;
-    padding-top: 20px;
+  height: 100%;
+  padding-top: 20px;
 }
-.logo-sesion{
-    width: 80px;
-    height: 80px;
-    margin-bottom: 20px;
+.logo-sesion {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
 }
-form{
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+form {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .form-group {
   padding: 10px 0;
   width: 100%;
 }
-.NameUser{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
+.NameUser {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
 }
 
 .field-error {
@@ -43,9 +43,9 @@ form{
   font-size: 0.9em;
   margin-top: 45px;
   background-color: rgb(246, 205, 205);
-    padding: 10px;
-    position: relative;
-    z-index: 1000   ;
+  padding: 10px;
+  position: relative;
+  z-index: 1000;
 }
 .perfume-input {
   width: 100%;
@@ -71,20 +71,20 @@ form{
   cursor: pointer;
   background-color: #1a1a1a;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   border: none;
   text-decoration: none;
 }
-.perfume-button:hover{
-    background-color: #d4af37;
-    color: #ddd;
+.perfume-button:hover {
+  background-color: #d4af37;
+  color: #ddd;
 }
-.login-link a{
-    color: #d4af37;
-    text-decoration: none;
+.login-link a {
+  color: #d4af37;
+  text-decoration: none;
 }
-.login-link a:hover{
-    text-decoration: underline;
+.login-link a:hover {
+  text-decoration: underline;
 }
 .psw-group {
   display: flex;
@@ -93,4 +93,33 @@ form{
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
+}
+
+.seleccion-preview {
+  margin-top: 24px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  background: #f8f5e9;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.seleccion-preview img {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-top: 12px;
+}
+
+.seleccion-nombre {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.seleccion-descripcion {
+  margin-top: 12px;
+  line-height: 1.4;
 }
