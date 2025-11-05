@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Rating } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import API_URL from '../config/api';
 import { useCart } from '../context/CartContext';
@@ -14,25 +15,54 @@ const ProductoCard = ({ producto, isAdmin = false }) => {
     type: 'info',
     isConfirm: false,
   });
+  const [ratingInfo, setRatingInfo] = useState({ promedio: 0, total: 0 });
+  const [ratingLoaded, setRatingLoaded] = useState(false);
 
   const navigate = useNavigate();
   const { addItem, items, DEFAULT_PRICE } = useCart();
 
-  const AgregarPedido = (e) => {
+  const AgregarPedido = async (e) => {
     e.stopPropagation();
     const alreadyInCart = items.some((item) => item.productId === producto.idProduct);
-    addItem({ ...producto, precio: producto.precio ?? DEFAULT_PRICE });
 
-    const message = alreadyInCart
-      ? `Se agregó otra unidad de "${producto.nombre}" a tu pedido.`
-      : `Producto "${producto.nombre}" agregado a tu pedido.`;
+    try {
+      const agregado = await addItem({ ...producto, precio: producto.precio ?? DEFAULT_PRICE });
 
-    setAlertInfo({
-      show: true,
-      message,
-      type: 'success',
-      isConfirm: false,
-    });
+      if (!agregado) {
+        return;
+      }
+
+      const message = alreadyInCart
+        ? `Se agregó otra unidad de "${producto.nombre}" a tu pedido.`
+        : `Producto "${producto.nombre}" agregado a tu pedido.`;
+
+      setAlertInfo({
+        show: true,
+        message,
+        type: 'success',
+        isConfirm: false,
+      });
+    } catch (error) {
+      if (error.code === 'AUTH_REQUIRED') {
+        setAlertInfo({
+          show: true,
+          message: 'Inicia sesión para agregar productos al carrito.',
+          type: 'warning',
+          isConfirm: false,
+        });
+        navigate('/login', {
+          state: { error: 'Inicia sesión para agregar productos al carrito.' },
+        });
+        return;
+      }
+
+      setAlertInfo({
+        show: true,
+        message: 'No se pudo agregar el producto al carrito. Intenta nuevamente.',
+        type: 'error',
+        isConfirm: false,
+      });
+    }
   };
 
   const irADetalle = () => {
@@ -109,6 +139,38 @@ const ProductoCard = ({ producto, isAdmin = false }) => {
     }, 3000); // Ocultar después de 5 segundos
   }, [alertInfo.show]);
 
+  useEffect(() => {
+    let isActive = true;
+
+    const fetchRating = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/productos/${producto.idProduct}/estrellas`);
+        if (!response.ok) {
+          throw new Error('No se pudo obtener la calificación');
+        }
+        const data = await response.json();
+        if (isActive) {
+          setRatingInfo({
+            promedio: Number(data.promedio) || 0,
+            total: Number(data.total) || 0,
+          });
+          setRatingLoaded(true);
+        }
+      } catch (error) {
+        if (isActive) {
+          setRatingInfo({ promedio: 0, total: 0 });
+          setRatingLoaded(true);
+        }
+      }
+    };
+
+    fetchRating();
+
+    return () => {
+      isActive = false;
+    };
+  }, [producto.idProduct]);
+
   // Usar la imagen que esté disponible
   const imagenUrl = producto.img || producto.Img;
 
@@ -149,6 +211,17 @@ const ProductoCard = ({ producto, isAdmin = false }) => {
       </p>
 
       <h3 className="perfume-name">{producto.nombre}</h3>
+
+      <div className="perfume-rating">
+        <Rating value={ratingInfo.promedio} precision={0.5} readOnly size="small" />
+        <span className="perfume-rating-text">
+          {ratingLoaded
+            ? ratingInfo.total > 0
+              ? `${ratingInfo.promedio.toFixed(1)} (${ratingInfo.total})`
+              : 'Sin calificaciones'
+            : 'Cargando...'}
+        </span>
+      </div>
 
       <div className="perfume-card-buttons">
         {isAdmin ? (

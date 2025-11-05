@@ -51,6 +51,19 @@ border-radius: 5px;
   font-size: 1.2em;
   margin-bottom: 12px;
 }
+
+.perfume-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.perfume-rating-text {
+  font-size: 0.85rem;
+  color: #555;
+}
 .perfume-gen{
   font-size: 0.9em;
   color: #666;

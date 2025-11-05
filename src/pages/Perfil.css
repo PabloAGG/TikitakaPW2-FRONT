@@ -114,6 +114,12 @@ form {
   margin-top: 12px;
 }
 
+.seleccion-bandera {
+  max-width: 220px;
+  margin: 16px auto 0;
+  display: block;
+}
+
 .seleccion-nombre {
   font-weight: 600;
   margin-bottom: 8px;

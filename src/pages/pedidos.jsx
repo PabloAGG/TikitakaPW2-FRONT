@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AlertMsg from '../componentes/AlertMsg';
 import CloudinaryImage from '../componentes/CloudinaryImage';
 import Loading from '../componentes/loading';
@@ -14,14 +15,31 @@ const DATOS_PAGO = {
   numeroCuenta: '5428 7851 7132 4840',
 };
 
+const METODOS_PAGO = [
+  { value: 'tarjeta', label: 'Tarjeta' },
+  { value: 'transferencia', label: 'Transferencia' },
+  { value: 'oxxo', label: 'Oxxo' },
+];
+
 const currencyFormatter = new Intl.NumberFormat('es-MX', {
   style: 'currency',
   currency: 'MXN',
 });
 
 const PedidosTemporales = () => {
-  const { items, updateQuantity, removeItem, clearCart, totalAmount, totalItems, DEFAULT_PRICE } =
-    useCart();
+  const navigate = useNavigate();
+  const {
+    items,
+    updateQuantity,
+    removeItem: removeCartItem,
+    clearCart,
+    totalAmount,
+    totalItems,
+    DEFAULT_PRICE,
+    refreshCart,
+    isLoading,
+    isInitialized,
+  } = useCart();
   const [processing, setProcessing] = useState(false);
   const [mensaje, setMensaje] = useState(null);
   const [error, setError] = useState(null);
@@ -33,16 +51,48 @@ const PedidosTemporales = () => {
 
   const totalConFormato = useMemo(() => currencyFormatter.format(totalAmount), [totalAmount]);
 
-  const handleQuantityChange = (productId, delta) => {
+  const handleQuantityChange = async (productId, delta) => {
     const item = items.find((current) => current.productId === productId);
     if (!item) return;
     const nuevaCantidad = item.quantity + delta;
-    updateQuantity(productId, nuevaCantidad);
+    try {
+      await updateQuantity(productId, nuevaCantidad);
+    } catch (quantityError) {
+      if (quantityError.code === 'AUTH_REQUIRED') {
+        navigate('/login', {
+          replace: true,
+          state: { error: 'Inicia sesión para administrar tu carrito.' },
+        });
+        return;
+      }
+      setError('No se pudo actualizar la cantidad. Intenta nuevamente.');
+      console.error('Error al actualizar la cantidad:', quantityError);
+    }
+  };
+
+  const handleRemove = async (productId) => {
+    try {
+      await removeCartItem(productId);
+    } catch (removeError) {
+      if (removeError.code === 'AUTH_REQUIRED') {
+        navigate('/login', {
+          replace: true,
+          state: { error: 'Inicia sesión para administrar tu carrito.' },
+        });
+        return;
+      }
+      setError('No se pudo quitar el producto del carrito.');
+      console.error('Error al remover del carrito:', removeError);
+    }
   };
 
   const handlePaymentChange = (event) => {
     const { name, value } = event.target;
     setPaymentData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleMetodoClick = (metodo) => {
+    setPaymentData((prev) => ({ ...prev, metodo }));
   };
 
   const generarPdf = (pedidosConfirmados, referencia) => {
@@ -86,13 +136,13 @@ const PedidosTemporales = () => {
 
     const finalY = doc.lastAutoTable.finalY;
     doc.setFontSize(14);
-    doc.text(`Total del pedido: ${totalConFormato}`, 10, finalY + 15);
-    doc.setFontSize(12);
-    doc.text('Instrucciones de pago simuladas', 10, finalY + 25);
-    doc.text(`Banco: ${DATOS_PAGO.banco}`, 10, finalY + 33);
-    doc.text(`Titular: ${paymentData.titular || DATOS_PAGO.titular}`, 10, finalY + 41);
-    doc.text(`Número de tarjeta: ${DATOS_PAGO.numeroCuenta}`, 10, finalY + 49);
-    doc.text('Gracias por tu compra.', 10, finalY + 63);
+  doc.text(`Total del pedido: ${totalConFormato}`, 10, finalY + 15);
+  doc.setFontSize(12);
+  doc.text('Guía de pago (entorno de prueba)', 10, finalY + 25);
+  doc.text(`Banco: ${DATOS_PAGO.banco}`, 10, finalY + 33);
+  doc.text(`Titular: ${paymentData.titular || DATOS_PAGO.titular}`, 10, finalY + 41);
+  doc.text(`Número de cuenta: ${DATOS_PAGO.numeroCuenta}`, 10, finalY + 49);
+  doc.text('Gracias por tu compra.', 10, finalY + 63);
 
     doc.save(`pedido-sillage-${Date.now()}.pdf`);
   };
@@ -111,7 +161,7 @@ const PedidosTemporales = () => {
     }
 
     if (!paymentData.titular.trim() || !paymentData.referencia.trim()) {
-      setError('Completa los datos del pago simulado.');
+      setError('Completa los datos del pago.');
       return;
     }
 
@@ -140,20 +190,40 @@ const PedidosTemporales = () => {
         throw new Error(errorData.error || 'No se pudo registrar el pedido');
       }
 
-      const data = await response.json();
-      generarPdf(data.pedidos, paymentData.referencia);
-      clearCart();
-      setMensaje('¡Pago simulado exitosamente! Revisa el PDF con tu comprobante.');
+    const data = await response.json();
+    generarPdf(data.pedidos, paymentData.referencia);
+    await clearCart();
+    setMensaje('Pedido confirmado en modo demostración. Revisa el PDF con tu comprobante.');
       setPaymentData({ metodo: 'tarjeta', titular: '', referencia: '' });
     } catch (checkoutError) {
       console.error('Error durante el checkout:', checkoutError);
+      if (checkoutError.code === 'AUTH_REQUIRED') {
+        navigate('/login', {
+          replace: true,
+          state: { error: 'Inicia sesión para completar tu compra.' },
+        });
+        return;
+      }
       setError(checkoutError.message);
     } finally {
       setProcessing(false);
     }
   };
 
-  if (processing && items.length === 0) {
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login', {
+        replace: true,
+        state: { error: 'Inicia sesión para ver tu carrito.' },
+      });
+      return;
+    }
+
+    refreshCart();
+  }, [navigate, refreshCart]);
+
+  if (!isInitialized || (isLoading && items.length === 0)) {
     return <Loading />;
   }
 
@@ -169,124 +239,174 @@ const PedidosTemporales = () => {
 
   return (
     <div className="carrito-container">
-      <h1>Tu carrito</h1>
+      <div className="carrito-header">
+        <div>
+          <h1>Tu carrito</h1>
+          <p className="carrito-subtitle">Revisa los artículos antes de confirmar tu pedido</p>
+        </div>
+        <div className="carrito-resumen-mini">
+          <span className="resumen-mini-total">{totalConFormato}</span>
+          <span className="resumen-mini-items">{totalItems} artículos</span>
+        </div>
+      </div>
+
       {mensaje && <AlertMsg message={mensaje} type="success" />}
       {error && <AlertMsg message={error} type="error" />}
 
-      <div className="pedidos-list">
+      <div className="carrito-contenido">
+        <div className="pedidos-list">
         {items.map((item) => {
           const { product, productId, quantity } = item;
           const precioUnitario = product?.precio ?? DEFAULT_PRICE;
           const subtotal = precioUnitario * quantity;
 
           return (
-            <div className="carrito-item" key={productId}>
-              <div className="detail-image-container">
-                {product?.img ? (
-                  <CloudinaryImage
-                    url={product.img}
-                    alt={product.nombre}
-                    className="carousel-media"
-                  />
-                ) : (
-                  <img
-                    src={`https://via.placeholder.com/200x200?text=${encodeURIComponent(
-                      product?.nombre ?? 'Producto'
-                    )}`}
-                    alt={product?.nombre ?? 'Producto'}
-                  />
-                )}
-              </div>
-              <div className="detail-info-container">
-                <h2 className="detail-name">{product?.nombre}</h2>
-                {product?.seleccionNombre && (
-                  <p className="detail-marca">{product.seleccionNombre}</p>
-                )}
-                <p className="detail-description">Cantidad: {quantity}</p>
-                <p className="detail-description">
-                  Precio unitario: {currencyFormatter.format(precioUnitario)}
-                </p>
-                <p className="detail-description">Subtotal: {currencyFormatter.format(subtotal)}</p>
-
-                <div className="quantity-section">
-                  <div className="quantity-controls">
-                    <button
-                      className="quantity-btn"
-                      onClick={() => handleQuantityChange(productId, -1)}
-                    >
-                      -
-                    </button>
-                    <span className="quantity-display">{quantity}</span>
-                    <button
-                      className="quantity-btn"
-                      onClick={() => handleQuantityChange(productId, 1)}
-                    >
-                      +
-                    </button>
+              <div className="carrito-item" key={productId}>
+                <div className="carrito-item-media">
+                  <div className="carrito-item-media-wrapper">
+                    {product?.img ? (
+                      <CloudinaryImage
+                        url={product.img}
+                        alt={product.nombre}
+                        className="carrito-item-media-img"
+                      />
+                    ) : (
+                      <img
+                        src={`https://via.placeholder.com/200x200?text=${encodeURIComponent(
+                          product?.nombre ?? 'Producto'
+                        )}`}
+                        alt={product?.nombre ?? 'Producto'}
+                        className="carrito-item-media-img"
+                      />
+                    )}
                   </div>
                 </div>
+                <div className="carrito-item-info">
+                  <div className="carrito-item-header">
+                    <div>
+                      <h2 className="detail-name">{product?.nombre}</h2>
+                      {product?.seleccionNombre && (
+                        <p className="detail-marca">{product.seleccionNombre}</p>
+                      )}
+                    </div>
+                    <button className="carrito-remove" onClick={() => handleRemove(productId)}>
+                      Quitar
+                    </button>
+                  </div>
 
-                <button className="dltPerf" onClick={() => removeItem(productId)}>
-                  Eliminar
-                </button>
+                  <div className="carrito-item-precios">
+                    <div>
+                      <span className="carrito-precio-label">Precio unitario</span>
+                      <span className="carrito-precio-valor">
+                        {currencyFormatter.format(precioUnitario)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="carrito-precio-label">Subtotal</span>
+                      <span className="carrito-precio-total">
+                        {currencyFormatter.format(subtotal)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="carrito-item-controles">
+                    <div className="quantity-controls">
+                      <button
+                        className="quantity-btn"
+                        onClick={() => handleQuantityChange(productId, -1)}
+                        aria-label="Disminuir cantidad"
+                      >
+                        -
+                      </button>
+                      <span className="quantity-display">{quantity}</span>
+                      <button
+                        className="quantity-btn"
+                        onClick={() => handleQuantityChange(productId, 1)}
+                        aria-label="Aumentar cantidad"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
           );
         })}
       </div>
+        <aside className="carrito-resumen">
+          <div className="total-section">
+            <div className="total-header">
+              <h2>Resumen</h2>
+              <span className="total-articulos">{totalItems} artículos</span>
+            </div>
+            <div className="total-cifra">{totalConFormato}</div>
+            <p className="total-nota">Incluye estimación de impuestos y cargos.</p>
+          </div>
 
-      <div className="total-section">
-        <h2>
-          Total ({totalItems} artículos): {totalConFormato}
-        </h2>
+          <form className="pago-form" onSubmit={handleCheckout}>
+            <h3>Confirmación de pago</h3>
+            <p className="pago-hint">
+              Este checkout funciona como demostración: los datos no generan un cobro real, pero sí
+              un comprobante que puedes descargar.
+            </p>
+            <div className="payment-pill-group">
+              {METODOS_PAGO.map((metodo) => (
+                <button
+                  key={metodo.value}
+                  type="button"
+                  className={`payment-pill ${paymentData.metodo === metodo.value ? 'active' : ''}`}
+                  onClick={() => handleMetodoClick(metodo.value)}
+                >
+                  {metodo.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="titular">Nombre del titular</label>
+              <input
+                id="titular"
+                name="titular"
+                className="perfume-input"
+                value={paymentData.titular}
+                onChange={handlePaymentChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="referencia">Referencia de pago</label>
+              <input
+                id="referencia"
+                name="referencia"
+                className="perfume-input"
+                value={paymentData.referencia}
+                onChange={handlePaymentChange}
+                placeholder="Ingresa una referencia para identificar este pago"
+                required
+              />
+            </div>
+
+            <div className="pago-meta">
+              <span>
+                <strong>Institución:</strong> {DATOS_PAGO.banco}
+              </span>
+              <span>
+                <strong>Cuenta demostrativa:</strong> {DATOS_PAGO.numeroCuenta}
+              </span>
+            </div>
+
+            <div className="pago-instrucciones">
+              <strong>Cómo finalizar:</strong> ingresa un nombre y una referencia única. Con eso
+              generaremos el PDF con el resumen del pedido y los datos de pago de prueba.
+            </div>
+
+            <button className="completeCarr" type="submit" disabled={processing}>
+              {processing ? 'Procesando...' : 'Confirmar pedido'}
+            </button>
+          </form>
+        </aside>
       </div>
-
-      <form className="pago-form" onSubmit={handleCheckout}>
-        <h2>Simulación de pago</h2>
-        <div className="form-group">
-          <label htmlFor="titular">Nombre del titular</label>
-          <input
-            id="titular"
-            name="titular"
-            className="perfume-input"
-            value={paymentData.titular}
-            onChange={handlePaymentChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="metodo">Método de pago</label>
-          <select
-            id="metodo"
-            name="metodo"
-            className="perfume-input"
-            value={paymentData.metodo}
-            onChange={handlePaymentChange}
-          >
-            <option value="tarjeta">Tarjeta</option>
-            <option value="transferencia">Transferencia</option>
-            <option value="oxxo">Oxxo</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="referencia">Referencia de pago</label>
-          <input
-            id="referencia"
-            name="referencia"
-            className="perfume-input"
-            value={paymentData.referencia}
-            onChange={handlePaymentChange}
-            placeholder="Ingresa una referencia para este pago simulado"
-            required
-          />
-        </div>
-
-        <button className="completeCarr" type="submit" disabled={processing}>
-          {processing ? 'Procesando...' : 'Confirmar pago simulado'}
-        </button>
-      </form>
     </div>
   );
 };

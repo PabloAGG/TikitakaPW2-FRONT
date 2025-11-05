@@ -24,6 +24,7 @@ const AdminRoute = ({ children }) => {
   } catch (error) {
     // Si el token es inválido, limpia y redirige al login
     localStorage.removeItem('token');
+    window.dispatchEvent(new Event('cart:token-change'));
     return <Navigate to="/login" state={{ error: 'Tu sesión ha expirado o es inválida.' }} />;
   }
 };

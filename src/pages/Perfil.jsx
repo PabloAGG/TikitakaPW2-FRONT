@@ -19,11 +19,48 @@ const Perfil = () => {
   const [PassError, setPassError] = useState('');
   const [PassCError, setPassCError] = useState('');
   const [changePassword, setChangePassword] = useState(false);
-  const [seleccionInfo, setSeleccionInfo] = useState({ nombre: '', datos: '' });
+  const [seleccionInfo, setSeleccionInfo] = useState({ nombre: '', datos: '', bandera: '' });
+  const [seleccionId, setSeleccionId] = useState('');
+  const [selecciones, setSelecciones] = useState([]);
   const navigate = useNavigate();
   const esDatoImagen = (dato) => {
     if (!dato) return false;
     return /^https?:\/\//i.test(dato) || dato.startsWith('data:image');
+  };
+
+  const normalizarTexto = (texto) =>
+    texto
+      ? texto
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+      : '';
+
+  const banderaMap = {
+    mexico: 'mx',
+    canada: 'ca',
+    'estados unidos': 'us',
+    japon: 'jp',
+    'corea del sur': 'kr',
+    australia: 'au',
+    'nueva zelanda': 'nz',
+    argentina: 'ar',
+    brasil: 'br',
+    uruguay: 'uy',
+    colombia: 'co',
+    ecuador: 'ec',
+    paraguay: 'py',
+    marruecos: 'ma',
+    jordania: 'jo',
+    uzbekistan: 'uz',
+    iran: 'ir',
+  };
+
+  const getBanderaUrl = (nombreSeleccion) => {
+    if (!nombreSeleccion) return '';
+    const clave = normalizarTexto(nombreSeleccion.trim());
+    const codigo = banderaMap[clave];
+    return codigo ? `https://flagcdn.com/h160/${codigo}.png` : '';
   };
 
   // Validación en tiempo real para teléfono
@@ -109,6 +146,12 @@ const Perfil = () => {
       return;
     }
 
+    if (!seleccionId) {
+      setError('Selecciona una selección favorita.');
+      setLoading(false);
+      return;
+    }
+
     if (changePassword && (!password || !passwordConfirm)) {
       setError('Para cambiar la contraseña, ambos campos son obligatorios.');
       setLoading(false);
@@ -125,13 +168,15 @@ const Perfil = () => {
         navigate('/login', {
           state: { error: 'Por favor, inicia sesión para actualizar tu perfil.' },
         });
-        localStorage.removeItem('token');
+          localStorage.removeItem('token');
+          window.dispatchEvent(new Event('cart:token-change'));
         return;
       }
       const bodyPayload = {
         nombre,
         apellido,
         telefono,
+        seleccion: Number(seleccionId),
       };
 
       if (changePassword) {
@@ -160,9 +205,11 @@ const Perfil = () => {
         setPasswordConfirm('');
         setChangePassword(false);
         setSuccess('Datos actualizados correctamente.');
+        setSeleccionId(String(data.seleccion || ''));
         setSeleccionInfo({
           nombre: data.seleccionNombre || '',
           datos: data.seleccionDatos || '',
+          bandera: getBanderaUrl(data.seleccionNombre),
         });
       }
     } catch (err) {
@@ -180,7 +227,8 @@ const Perfil = () => {
           navigate('/login', {
             state: { error: 'Por favor, inicia sesión para acceder a tu perfil.' },
           });
-          localStorage.removeItem('token');
+            localStorage.removeItem('token');
+            window.dispatchEvent(new Event('cart:token-change'));
           return;
         }
         const response = await fetch(`${API_URL}/api/auth/perfil`, {
@@ -199,12 +247,15 @@ const Perfil = () => {
         setNombre(data.nombre || '');
         setApellido(data.apellidos || '');
         setTelefono(data.telf || '');
+        setSeleccionId(String(data.seleccion || ''));
         setSeleccionInfo({
           nombre: data.seleccionNombre || '',
           datos: data.seleccionDatos || '',
+          bandera: getBanderaUrl(data.seleccionNombre),
         });
       } catch (err) {
-        localStorage.removeItem('token');
+          localStorage.removeItem('token');
+          window.dispatchEvent(new Event('cart:token-change'));
         navigate('/login', {
           state: { error: 'Sesión expirada. Por favor, inicia sesión nuevamente.' },
         });
@@ -212,17 +263,72 @@ const Perfil = () => {
       }
     };
 
+    const fetchSelecciones = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/selecciones`);
+        if (!response.ok) {
+          throw new Error('Error al obtener selecciones');
+        }
+        const data = await response.json();
+        setSelecciones(data);
+      } catch (fetchError) {
+        console.error('Error cargando selecciones:', fetchError);
+      }
+    };
+
+    fetchSelecciones();
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    if (!seleccionId || selecciones.length === 0) return;
+
+    const seleccionEncontrada = selecciones.find((item) => {
+      const idActual = item.idSelec ?? item.idselec ?? item.id;
+      return String(idActual) === String(seleccionId);
+    });
+
+    if (seleccionEncontrada) {
+      const nombreSeleccion = seleccionEncontrada.Nombre || seleccionEncontrada.nombre || '';
+      const datosSeleccion = seleccionEncontrada.Datos || seleccionEncontrada.datos || '';
+      setSeleccionInfo({
+        nombre: nombreSeleccion,
+        datos: datosSeleccion,
+        bandera: getBanderaUrl(nombreSeleccion),
+      });
+    }
+  }, [seleccionId, selecciones]);
 
   return (
     <div className="Perfil-container">
       <h2>Mis Datos</h2>
+      {seleccionInfo.nombre && (
+        <div className="seleccion-preview">
+          <h3>Mi selección</h3>
+          <p className="seleccion-nombre">{seleccionInfo.nombre}</p>
+          {seleccionInfo.bandera && (
+            <img
+              src={seleccionInfo.bandera}
+              alt={`Bandera de ${seleccionInfo.nombre}`}
+              className="seleccion-bandera"
+            />
+          )}
+          {!seleccionInfo.bandera && esDatoImagen(seleccionInfo.datos) && (
+            <img src={seleccionInfo.datos} alt={`Selección ${seleccionInfo.nombre}`} />
+          )}
+          {seleccionInfo.datos && !esDatoImagen(seleccionInfo.datos) && (
+            <p className="seleccion-descripcion">{seleccionInfo.datos}</p>
+          )}
+        </div>
+      )}
+      <br />
       {success && <AlertMsg message={success} type="success" />}
       {error && <AlertMsg message={error} type="error" />}
       {loading ? (
         <Loading />
       ) : (
+
+        
         <form onSubmit={handleSubmit} className="Perfil-form">
           <div className="NameUser">
             <div className="form-group">
@@ -260,6 +366,29 @@ const Perfil = () => {
             />
             {telError && <span className="error">{telError}</span>}
           </div>
+          <div className="form-group">
+            <label htmlFor="seleccion">Selección que apoyo:</label>
+            <select
+              id="seleccion"
+              className="perfume-input"
+              value={seleccionId}
+              onChange={(e) => setSeleccionId(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Selecciona tu selección favorita
+              </option>
+              {selecciones.map((seleccion) => {
+                const idActual = seleccion.idSelec ?? seleccion.idselec ?? seleccion.id;
+                const nombreSeleccion = seleccion.Nombre || seleccion.nombre;
+                return (
+                  <option key={idActual} value={idActual}>
+                    {nombreSeleccion}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
           {changePassword && (
             <>
               <div className="form-group">
@@ -296,17 +425,7 @@ const Perfil = () => {
           </button>
         </form>
       )}
-      {seleccionInfo.nombre && (
-        <div className="seleccion-preview">
-          <h3>Mi selección</h3>
-          <p className="seleccion-nombre">{seleccionInfo.nombre}</p>
-          {esDatoImagen(seleccionInfo.datos) ? (
-            <img src={seleccionInfo.datos} alt={`Selección ${seleccionInfo.nombre}`} />
-          ) : (
-            <p className="seleccion-descripcion">{seleccionInfo.datos}</p>
-          )}
-        </div>
-      )}
+      
     </div>
   );
 };

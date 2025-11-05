@@ -104,6 +104,7 @@ useEffect(() => {
             const data = await response.json();
             console.log('Inicio de sesión exitoso:', data);
             localStorage.setItem('token', data.token);
+            window.dispatchEvent(new Event('cart:token-change'));
             navigate('/'); // Redirige al usuario a la página principal después de iniciar sesión
    // Retorna null para evitar renderizar nada más
 

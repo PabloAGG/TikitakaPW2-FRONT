@@ -87,7 +87,7 @@ const Dashboard = () => {
     <div className="dashboard">
       <h1>Productos disponibles</h1>
       {seleccionPreferida && (
-        <p className="dashboard-highlight">
+        <p className="">
           Mostrando primero artículos de tu selección favorita:{' '}
           <strong>{seleccionPreferida}</strong>
         </p>
@@ -100,8 +100,9 @@ const Dashboard = () => {
           <div className="perfume-list-seccion">
             <div className="perfume-list">
               {/* 2. Usa el objeto 'perfumesPorMarca' para obtener la lista de productos */}
-              {perfumesPorMarca[seleccion].map((producto) => (
+              {(perfumesPorMarca[seleccion] ?? []).map((producto) => (
                 <PerfumeCard key={producto.idProduct} producto={producto} />
+                
               ))}
             </div>
           </div>

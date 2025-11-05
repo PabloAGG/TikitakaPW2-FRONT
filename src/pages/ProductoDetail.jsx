@@ -1,12 +1,13 @@
 import { Box, Button, Rating, TextField, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Hook para leer los parámetros de la URL
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom'; // Hook para leer los parámetros de la URL
 import AlertMsg from '../componentes/AlertMsg';
 import Loading from '../componentes/loading'; // Componente de carga
 import MediaCarousel from '../componentes/MediaCarousel'; // Nuevo carrusel
 import ProductoCard from '../componentes/PerfumeCard';
 import API_URL from '../config/api';
 import './PerfumeDetail.css';
+import { useCart } from '../context/CartContext';
 const ProductoDetail = () => {
   // useParams nos da un objeto con los parámetros, en este caso { id: '...' }
   const { id } = useParams();
@@ -24,6 +25,16 @@ const ProductoDetail = () => {
   const [nuevoComentario, setNuevoComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [recomendados, setRecomendados] = useState([]);
+  const [mostrarTodosComentarios, setMostrarTodosComentarios] = useState(false);
+  const recomendacionesRef = useRef(null);
+  const { addItem, items, DEFAULT_PRICE } = useCart();
+  const navigate = useNavigate();
+  const [alertInfo, setAlertInfo] = useState({
+    show: false,
+    message: '',
+    type: 'info',
+    isConfirm: false,
+  });
   const capitalizarPrimeraPalabraExacto = (texto) => {
     if (!texto) return '';
     const palabras = texto.split(' ');
@@ -42,6 +53,61 @@ const ProductoDetail = () => {
       return '';
     }
   };
+ const AgregarPedido = async (e) => {
+    e.stopPropagation();
+    const alreadyInCart = items.some((item) => item.productId === producto.idProduct);
+
+    try {
+      const agregado = await addItem({ ...producto, precio: producto.precio ?? DEFAULT_PRICE });
+
+      if (!agregado) {
+        return;
+      }
+
+      const message = alreadyInCart
+        ? `Se agregó otra unidad de "${producto.nombre}" a tu pedido.`
+        : `Producto "${producto.nombre}" agregado a tu pedido.`;
+
+      setAlertInfo({
+        show: true,
+        message,
+        type: 'success',
+        isConfirm: false,
+      });
+    } catch (error) {
+      if (error.code === 'AUTH_REQUIRED') {
+        setAlertInfo({
+          show: true,
+          message: 'Inicia sesión para agregar productos al carrito.',
+          type: 'warning',
+          isConfirm: false,
+        });
+        navigate('/login', {
+          state: { error: 'Inicia sesión para agregar productos al carrito.' },
+        });
+        return;
+      }
+
+      setAlertInfo({
+        show: true,
+        message: 'No se pudo agregar el producto al carrito. Intenta nuevamente.',
+        type: 'error',
+        isConfirm: false,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!alertInfo.show) {
+      return undefined;
+    }
+
+    const timer = setTimeout(() => {
+      setAlertInfo((prev) => (prev ? { ...prev, show: false } : prev));
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [alertInfo.show]);
 
   // Función para enviar calificación
   const enviarCalificacion = async () => {
@@ -71,6 +137,7 @@ const ProductoDetail = () => {
       if (response.ok) {
         const data = await response.json();
         setMiCalificacion(nuevaCalificacion);
+
         setMensaje({ texto: data.message, tipo: 'success' });
 
         // Recargar las estrellas para actualizar el promedio
@@ -119,6 +186,7 @@ const ProductoDetail = () => {
       if (response.ok) {
         const data = await response.json();
         setComentarios(data);
+        setMostrarTodosComentarios(false);
       }
     } catch (error) {
       console.error('Error cargando comentarios:', error);
@@ -195,6 +263,7 @@ const ProductoDetail = () => {
       const comentarioCreado = await response.json();
       setComentarios((prev) => [comentarioCreado, ...prev]);
       setNuevoComentario('');
+      setMostrarTodosComentarios(true);
       setComentarioMensaje({ texto: '¡Comentario publicado!', tipo: 'success' });
     } catch (error) {
       console.error('Error al enviar comentario:', error);
@@ -202,6 +271,20 @@ const ProductoDetail = () => {
     } finally {
       setEnviandoComentario(false);
     }
+  };
+
+  const comentariosMostrados = mostrarTodosComentarios ? comentarios : comentarios.slice(0, 5);
+  const hayMasComentarios = comentarios.length > 5;
+
+  const desplazarRecomendados = (direction) => {
+    const container = recomendacionesRef.current;
+    if (!container) return;
+
+    const scrollAmount = container.offsetWidth * 0.8;
+    container.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
   };
 
   useEffect(() => {
@@ -256,153 +339,196 @@ const ProductoDetail = () => {
 
   return (
     <div className="perfume-detail">
-      <div className="detail-image-container">
-        {/* Usar el nuevo carrusel de multimedia */}
-        <MediaCarousel multimedia={multimedia} productName={producto.nombre} />
-      </div>
-      <div className="detail-info-container">
-        <h1 className="detail-name">{producto.nombre}</h1>
-        <h2 className="detail-marca">{producto.seleccionnombre || 'Sin selección'}</h2>
-        <p className="detail-description">
-          {capitalizarPrimeraPalabraExacto(producto.descripcion)}
-        </p>
-        <div className="detail-meta">
-          <p>
-            <strong>Género:</strong> {producto.genero}
+      <div className="detail-main">
+        <div className="detail-image-container">
+          {/* Usar el nuevo carrusel de multimedia */}
+          <MediaCarousel multimedia={multimedia} productName={producto.nombre} />
+        </div>
+        <div className="detail-info-container">
+          {alertInfo.show && (
+            <AlertMsg
+              message={alertInfo.message}
+              type={alertInfo.type}
+              isConfirm={alertInfo.isConfirm}
+              onCancel={() => setAlertInfo((prev) => (prev ? { ...prev, show: false } : prev))}
+            />
+          )}
+          <h1 className="detail-name">{producto.nombre}</h1>
+          <h2 className="detail-marca">{producto.seleccionnombre || 'Sin selección'}</h2>
+          <p className="detail-description">
+            {capitalizarPrimeraPalabraExacto(producto.descripcion)}
           </p>
-          {producto.top && <p className="destacado-badge">⭐ Producto Destacado</p>}
-        </div>
-        <div className="detail-rating">
-          <Typography variant="h6" component="h3" gutterBottom>
-            Calificaciones
-          </Typography>
-          <Box display="flex" alignItems="center" mb={2}>
-            <Rating
-              name="average-rating"
-              value={estrellas.promedio}
-              readOnly
-              precision={0.1}
-              size="large"
-            />
-            <Typography variant="body1" ml={1}>
-              {estrellas.promedio.toFixed(1)} ({estrellas.total}{' '}
-              {estrellas.total === 1 ? 'calificación' : 'calificaciones'})
+          <div className="detail-meta">
+            <p>
+              <strong>Género:</strong> {producto.genero}
+            </p>
+            {producto.top && <p className="destacado-badge">⭐ Producto Destacado</p>}
+          </div>
+          <div className="detail-rating">
+            <Typography variant="h6" component="h3" gutterBottom>
+              Calificaciones
             </Typography>
-          </Box>
-
-          {/* Sección para calificar */}
-          <Box
-            className="user-rating-section"
-            p={2}
-            border={1}
-            borderColor="grey.300"
-            borderRadius={2}
-          >
-            <Typography variant="h6" gutterBottom>
-              {miCalificacion ? 'Tu calificación' : 'Califica este producto'}
-            </Typography>
-
-            <Box display="flex" alignItems="center" gap={2} mb={2}>
+            <Box display="flex" alignItems="center" mb={2}>
               <Rating
-                name="user-rating"
-                value={nuevaCalificacion}
-                onChange={(event, newValue) => {
-                  setNuevaCalificacion(newValue || 0);
-                }}
+                name="average-rating"
+                value={estrellas.promedio}
+                readOnly
+                precision={0.1}
                 size="large"
-                precision={1}
               />
-              <Typography variant="body2">
-                {nuevaCalificacion > 0 &&
-                  `${nuevaCalificacion} estrella${nuevaCalificacion !== 1 ? 's' : ''}`}
+              <Typography variant="body1" ml={1}>
+                {estrellas.promedio.toFixed(1)} ({estrellas.total}{' '}
+                {estrellas.total === 1 ? 'calificación' : 'calificaciones'})
               </Typography>
             </Box>
 
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={enviarCalificacion}
-              disabled={enviandoCalificacion || nuevaCalificacion === 0}
-              size="small"
+            {/* Sección para calificar */}
+            <Box
+              className="user-rating-section"
+              p={2}
+              border={1}
+              borderColor="grey.300"
+              borderRadius={2}
             >
-              {enviandoCalificacion
-                ? 'Enviando...'
-                : miCalificacion
-                ? 'Actualizar calificación'
-                : 'Enviar calificación'}
-            </Button>
-
-            {miCalificacion && (
-              <Typography variant="body2" color="text.secondary" mt={1}>
-                Calificación anterior: {miCalificacion} estrella{miCalificacion !== 1 ? 's' : ''}
+              <Typography variant="h6" gutterBottom>
+                {miCalificacion ? 'Tu calificación' : 'Califica este producto'}
               </Typography>
+
+              <Box display="flex" alignItems="center" gap={2} mb={2}>
+                <Rating
+                  name="user-rating"
+                  value={nuevaCalificacion}
+                  onChange={(event, newValue) => {
+                    setNuevaCalificacion(newValue || 0);
+                  }}
+                  size="large"
+                  precision={1}
+                />
+                <Typography variant="body2">
+                  {nuevaCalificacion > 0 &&
+                    `${nuevaCalificacion} estrella${nuevaCalificacion !== 1 ? 's' : ''}`}
+                </Typography>
+              </Box>
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={enviarCalificacion}
+                disabled={enviandoCalificacion || nuevaCalificacion === 0}
+                size="small"
+              >
+                {enviandoCalificacion
+                  ? 'Enviando...'
+                  : miCalificacion
+                  ? 'Actualizar calificación'
+                  : 'Enviar calificación'}
+              </Button>
+
+              {miCalificacion && (
+                <Typography variant="body2" color="text.secondary" mt={1}>
+                  Calificación anterior: {miCalificacion} estrella{miCalificacion !== 1 ? 's' : ''}
+                </Typography>
+              )}
+            </Box>
+
+            {mensaje && (
+              <Box mt={2}>
+                <AlertMsg message={mensaje.texto} type={mensaje.tipo} />
+              </Box>
             )}
-          </Box>
-
-          {mensaje && (
-            <Box mt={2}>
-              <AlertMsg message={mensaje.texto} type={mensaje.tipo} />
-            </Box>
-          )}
+          </div>
+           <button className="perfume-button addBtn" onClick={AgregarPedido}>
+              <i className="fa-solid fa-cart-plus"></i>
+            </button>
         </div>
-        <div className="detail-comments">
-          <Typography variant="h6" component="h3" gutterBottom>
-            Comentarios
-          </Typography>
-          {comentarios.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              Aún no hay comentarios. ¡Sé la primera persona en opinar!
-            </Typography>
-          ) : (
-            <ul className="comentarios-list">
-              {comentarios.map((comentario) => (
-                <li key={comentario.id} className="comentario-item">
-                  <p className="comentario-autor">
-                    <strong>
-                      {comentario.usuario?.nombre} {comentario.usuario?.apellidos}
-                    </strong>
-                    <span>{formatearFecha(comentario.createdAt)}</span>
-                  </p>
-                  <p>{comentario.contenido}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <Box component="form" onSubmit={enviarComentario} className="comentario-form">
-            <TextField
-              label="Escribe un comentario"
-              multiline
-              minRows={3}
-              fullWidth
-              value={nuevoComentario}
-              onChange={(event) => setNuevoComentario(event.target.value)}
-            />
-            <Button
-              variant="contained"
-              color="secondary"
-              type="submit"
-              disabled={enviandoComentario}
-            >
-              {enviandoComentario ? 'Enviando...' : 'Publicar comentario'}
-            </Button>
-          </Box>
-          {comentarioMensaje && (
-            <Box mt={2}>
-              <AlertMsg message={comentarioMensaje.texto} type={comentarioMensaje.tipo} />
-            </Box>
-          )}
-        </div>
+        
       </div>
+
+      <div className="detail-comments">
+        <Typography variant="h6" component="h3" gutterBottom>
+          Comentarios
+        </Typography>
+        {comentariosMostrados.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            Aún no hay comentarios. ¡Sé la primera persona en opinar!
+          </Typography>
+        ) : (
+          <ul className="comentarios-list">
+            {comentariosMostrados.map((comentario) => (
+              <li key={comentario.id} className="comentario-item">
+                <p className="comentario-autor">
+                  <strong>
+                    {comentario.usuario?.nombre} {comentario.usuario?.apellidos}
+                  </strong>
+                  <span>{formatearFecha(comentario.createdAt)}</span>
+                </p>
+                <p>{comentario.contenido}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {hayMasComentarios && (
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={() => setMostrarTodosComentarios((prev) => !prev)}
+            className="comentarios-toggle"
+          >
+            {mostrarTodosComentarios ? 'Ver menos comentarios' : 'Ver todos los comentarios'}
+          </Button>
+        )}
+
+        <Box component="form" onSubmit={enviarComentario} className="comentario-form">
+          <TextField
+            label="Escribe un comentario"
+            multiline
+            minRows={3}
+            fullWidth
+            value={nuevoComentario}
+            onChange={(event) => setNuevoComentario(event.target.value)}
+          />
+          <Button variant="contained" color="secondary" type="submit" disabled={enviandoComentario}>
+            {enviandoComentario ? 'Enviando...' : 'Publicar comentario'}
+          </Button>
+        </Box>
+
+        {comentarioMensaje && (
+          <Box mt={2}>
+            <AlertMsg message={comentarioMensaje.texto} type={comentarioMensaje.tipo} />
+          </Box>
+        )}
+      </div>
+
       {recomendados.length > 0 && (
         <div className="detail-recommendations">
           <Typography variant="h6" component="h3" gutterBottom>
             También podría interesarte
           </Typography>
-          <div className="recommendations-grid">
-            {recomendados.map((recomendado) => (
-              <ProductoCard key={recomendado.idProduct} producto={recomendado} />
-            ))}
+          <div className="recommendations-carousel">
+            <button
+              type="button"
+              className="carousel-button prev"
+              onClick={() => desplazarRecomendados('left')}
+              aria-label="Ver recomendaciones anteriores"
+            >
+              {'<'}
+            </button>
+            <div className="recommendations-track" ref={recomendacionesRef}>
+              {recomendados.map((recomendado) => (
+                <div key={recomendado.idProduct} className="recommendation-slide">
+                  <ProductoCard producto={recomendado} />
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="carousel-button next"
+              onClick={() => desplazarRecomendados('right')}
+              aria-label="Ver más recomendaciones"
+            >
+              {'>'}
+            </button>
           </div>
         </div>
       )}

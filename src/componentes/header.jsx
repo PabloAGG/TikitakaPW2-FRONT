@@ -21,6 +21,7 @@ const Header = () => {
       // Verifica si el token ha expirado
       if (user.exp && user.exp < Date.now() / 1000) {
         localStorage.removeItem('token');
+        window.dispatchEvent(new Event('cart:token-change'));
         userSesion = null;
         user = null;
       }
@@ -28,6 +29,7 @@ const Header = () => {
   } catch (error) {
     console.error('Token inválido:', error);
     localStorage.removeItem('token');
+    window.dispatchEvent(new Event('cart:token-change'));
     userSesion = null;
     user = null;
   }
@@ -114,6 +116,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    window.dispatchEvent(new Event('cart:token-change'));
     setMenuAbierto(false);
     setSearchbarVisible(false);
     navigate('/login');
@@ -135,7 +138,7 @@ const Header = () => {
         className="search-button"
         aria-label="Buscar"
         onClick={toggleSearchbar}
-        title="Buscar perfumes"
+        title="Buscar Productos"
       >
         <i className="fas fa-search"></i>
       </button>
