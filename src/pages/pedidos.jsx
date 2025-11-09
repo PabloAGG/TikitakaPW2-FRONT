@@ -11,7 +11,7 @@ import './PerfumeDetail.css';
 
 const DATOS_PAGO = {
   banco: 'Mercado Pago',
-  titular: 'Sillage Scents',
+  titular: 'Tikitaka',
   numeroCuenta: '5428 7851 7132 4840',
 };
 

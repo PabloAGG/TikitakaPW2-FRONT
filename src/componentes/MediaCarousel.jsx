@@ -118,16 +118,8 @@ const MediaCarousel = ({ multimedia, productName }) => {
         </div>
       )}
 
-      {/* Información del media actual */}
-      <div className="media-info">
-        <span className="media-type">
-          {currentMedia.tipo === 'video' ? '🎥 Video' : '🖼️ Imagen'}
-        </span>
-        {currentMedia.format && (
-          <span className="media-format">{currentMedia.format.toUpperCase()}</span>
-        )}
-      </div>
     </div>
+      
   );
 };
 

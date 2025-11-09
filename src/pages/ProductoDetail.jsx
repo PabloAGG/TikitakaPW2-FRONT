@@ -365,10 +365,6 @@ const ProductoDetail = () => {
             {producto.top && <p className="destacado-badge">⭐ Producto Destacado</p>}
           </div>
           <div className="detail-rating">
-            <Typography variant="h6" component="h3" gutterBottom>
-              Calificaciones
-            </Typography>
-            <Box display="flex" alignItems="center" mb={2}>
               <Rating
                 name="average-rating"
                 value={estrellas.promedio}
@@ -376,11 +372,8 @@ const ProductoDetail = () => {
                 precision={0.1}
                 size="large"
               />
-              <Typography variant="body1" ml={1}>
-                {estrellas.promedio.toFixed(1)} ({estrellas.total}{' '}
-                {estrellas.total === 1 ? 'calificación' : 'calificaciones'})
-              </Typography>
-            </Box>
+            
+            
 
             {/* Sección para calificar */}
             <Box
@@ -488,7 +481,7 @@ const ProductoDetail = () => {
             value={nuevoComentario}
             onChange={(event) => setNuevoComentario(event.target.value)}
           />
-          <Button variant="contained" color="secondary" type="submit" disabled={enviandoComentario}>
+          <Button variant="contained" color="primary" type="submit" disabled={enviandoComentario}>
             {enviandoComentario ? 'Enviando...' : 'Publicar comentario'}
           </Button>
         </Box>

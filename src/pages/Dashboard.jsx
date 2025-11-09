@@ -3,6 +3,7 @@ import Loading from '../componentes/loading'; // Componente de carga
 import PerfumeCard from '../componentes/PerfumeCard';
 import API_URL from '../config/api'; // Asegúrate de que esta ruta sea correcta
 import './Dashboard.css'; // Archivo para estilos del dashboard
+import { Typography } from '@mui/material';
 const Dashboard = () => {
   // Estado para guardar los perfumes agrupados por marca
   const [perfumesPorMarca, setPerfumesPorMarca] = useState({});
@@ -104,6 +105,9 @@ const Dashboard = () => {
                 <PerfumeCard key={producto.idProduct} producto={producto} />
                 
               ))}
+              {(perfumesPorMarca[seleccion] ?? []).length === 0 && (
+                <Typography variant="body1" color="textSecondary">No hay productos disponibles en esta selección.</Typography>
+              )}
             </div>
           </div>
         </div>

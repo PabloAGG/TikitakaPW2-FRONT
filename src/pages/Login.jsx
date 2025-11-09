@@ -4,8 +4,10 @@ import './Login.css';
 import API_URL from '../config/api';
 import Loading from '../componentes/loading';
 import AlertMsg from '../componentes/AlertMsg';
+import { useAuth } from '../context/AuthContext';
 const Login = () => {   
 const navigate = useNavigate();
+const { login } = useAuth();
     const [correo, setCorreo] = useState('');
 const [correoError, setCorreoError] = useState('');
     const [password, setPassword] = useState('');
@@ -103,7 +105,7 @@ useEffect(() => {
 
             const data = await response.json();
             console.log('Inicio de sesión exitoso:', data);
-            localStorage.setItem('token', data.token);
+            login(data.user, data.token);
             window.dispatchEvent(new Event('cart:token-change'));
             navigate('/'); // Redirige al usuario a la página principal después de iniciar sesión
    // Retorna null para evitar renderizar nada más

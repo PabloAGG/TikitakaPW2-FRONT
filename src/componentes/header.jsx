@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API_URL from '../config/api'; // Importa la URL de la API
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import './header.css'; // Asegúrate de tener este archivo CSS
 const Header = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -12,30 +13,13 @@ const Header = () => {
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
   const { totalItems } = useCart();
-  let user = null;
-  let userSesion = localStorage.getItem('token');
-
-  try {
-    if (userSesion) {
-      user = jwtDecode(userSesion);
-      // Verifica si el token ha expirado
-      if (user.exp && user.exp < Date.now() / 1000) {
-        localStorage.removeItem('token');
-        window.dispatchEvent(new Event('cart:token-change'));
-        userSesion = null;
-        user = null;
-      }
-    }
-  } catch (error) {
-    console.error('Token inválido:', error);
-    localStorage.removeItem('token');
-    window.dispatchEvent(new Event('cart:token-change'));
-    userSesion = null;
-    user = null;
-  }
+  const { user, token, logout: authLogout } = useAuth();
+  let userSesion = token;
 
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
+  const searchRef = useRef(null);
+  const suggestionTimeoutRef = useRef(null);
   useEffect(() => {
     if (!menuAbierto) return;
 
@@ -55,6 +39,27 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [menuAbierto]);
 
+  // Efecto para manejar clicks fuera del componente de búsqueda
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSuggestions([]);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Cleanup del timeout cuando el componente se desmonta
+  useEffect(() => {
+    return () => {
+      if (suggestionTimeoutRef.current) {
+        clearTimeout(suggestionTimeoutRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
@@ -66,10 +71,23 @@ const Header = () => {
   };
   const toggleSearchbar = () => {
     setSearchbarVisible(!searchbarVisible);
+  setSuggestions([]);
+
   };
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
+
+    // Limpiar timeout anterior si existe
+    if (suggestionTimeoutRef.current) {
+      clearTimeout(suggestionTimeoutRef.current);
+    }
+
+    // Si el campo está vacío, limpiar sugerencias inmediatamente
+    if (!value.trim()) {
+      setSuggestions([]);
+      return;
+    }
 
     fetch(`${API_URL}/api/busqueda?q=${encodeURIComponent(value)}`)
       .then((res) => {
@@ -77,13 +95,18 @@ const Header = () => {
         return res.json();
       })
       .then((data) => {
-        // Filtra los perfumes por nombre (ajusta según tu estructura de datos)
+        // Filtra los productos por nombre y selección
         const filtered = data.filter(
-          (perfume) =>
-            perfume.nombre.toLowerCase().includes(value.toLowerCase()) ||
-            perfume.marcap.toLowerCase().includes(value.toLowerCase()) // También filtra por marca
+          (producto) =>
+            producto.nombre && producto.nombre.toLowerCase().includes(value.toLowerCase()) ||
+            (producto.seleccionNombre && producto.seleccionNombre.toLowerCase().includes(value.toLowerCase()))
         );
         setSuggestions(filtered.slice(0, 5)); // Máximo 5 sugerencias
+        
+        // Programar que las sugerencias desaparezcan después de 5 segundos
+        suggestionTimeoutRef.current = setTimeout(() => {
+          setSuggestions([]);
+        }, 5000);
       })
       .catch((err) => {
         console.error('Error al buscar sugerencias:', err);
@@ -115,16 +138,15 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    authLogout();
     window.dispatchEvent(new Event('cart:token-change'));
     setMenuAbierto(false);
     setSearchbarVisible(false);
     navigate('/login');
-    window.location.reload(); // <-- Fuerza recarga para actualizar el estado de userSesion
-  }; // Redirige a la página de inicio
+  };
 
   const searchbarComponent = (
-    <div className={`search-container ${searchbarVisible ? 'active' : ''}`}>
+    <div ref={searchRef} className={`search-container ${searchbarVisible ? 'active' : ''}`}>
       <input
         type="text"
         className="search-bar"
@@ -133,6 +155,12 @@ const Header = () => {
         value={searchTerm}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
+        onFocus={() => {
+          // Cancelar timeout si el usuario vuelve a hacer focus
+          if (suggestionTimeoutRef.current) {
+            clearTimeout(suggestionTimeoutRef.current);
+          }
+        }}
       />
       <button
         className="search-button"
@@ -144,13 +172,13 @@ const Header = () => {
       </button>
       {suggestions.length > 0 && (
         <ul className="suggestions-list">
-          {suggestions.map((perfume) => (
+          {suggestions.map((producto) => (
             <li
-              key={perfume.idperfume}
-              onClick={() => handleSuggestionClick(perfume.nombre)}
+              key={producto.idProduct}
+              onClick={() => handleSuggestionClick(producto.nombre)}
               className="suggestion-item"
             >
-              {perfume.nombre}
+              {producto.nombre}
             </li>
           ))}
         </ul>
@@ -177,10 +205,13 @@ const Header = () => {
         <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}>
           <i className="fa-solid fa-house"></i> Inicio
         </Link>
-        {user && !user.admin && (
+        {user && user.admin !== true && (
           <>
             <Link to="/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}>
               <i className="fa-solid fa-layer-group"></i> Catalogo
+            </Link>
+            <Link to="/mis-pedidos" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              <i className="fas fa-box"></i> Mis Pedidos
             </Link>
           </>
         )}
@@ -192,13 +223,16 @@ const Header = () => {
           </>
         )}
 
-        {userSesion && user.admin && (
+        {userSesion && user && user.admin === true && (
           <>
             <Link to="/admin/catalogo" className="nav-link" onClick={() => setMenuAbierto(false)}>
               <i className="fas fa-cogs"></i> Administar Catálogo
             </Link>
             <Link to="/admin/crear" className="nav-link" onClick={() => setMenuAbierto(false)}>
               <i className="fas fa-plus"></i> Subir Producto
+            </Link>
+            <Link to="/admin/pedidos" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              <i className="fas fa-clipboard-list"></i> Gestión Pedidos
             </Link>
           </>
         )}

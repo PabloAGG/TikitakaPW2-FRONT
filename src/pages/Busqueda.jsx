@@ -9,7 +9,7 @@ const Busqueda = () => {
   const [resultados, setResultados] = useState([]);
   const {q} = useParams(); // Obtenemos el parámetro de búsqueda de la URL;
 const [loading, setLoading] = useState(true);
-const [perfumesPorMarca, setPerfumesPorMarca] = useState({}); // Estado para guardar los perfumes agrupados por marca
+const [perfumesPorMarca, setPerfumesPorMarca] = useState({}); // Estado para guardar los productos agrupados por selección
     useEffect(() => {
     const query = q ? q.trim() : ''; // Aseguramos que la búsqueda no sea vacía
    if (!q) return; // Si no hay query, no hacemos nada
@@ -24,17 +24,17 @@ const [perfumesPorMarca, setPerfumesPorMarca] = useState({}); // Estado para gua
         .then(data =>{ 
             
             setResultados(data)
-         const agrupados = data.reduce((acc, perfume) => {
-                    // La API ya nos da el nombre de la marca como 'marcap'
-                    const marca = perfume.marcap; 
-                    if (!acc[marca]) {
-                        acc[marca] = [];
-                    }
-                    acc[marca].push(perfume);
-                    return acc;
-                }, {});
+            // Agrupamos los productos por selección (igual que en Dashboard)
+            const agrupados = data.reduce((acc, producto) => {
+                const seleccion = producto.seleccionNombre || producto.seleccionnombre || 'Sin selección';
+                if (!acc[seleccion]) {
+                    acc[seleccion] = [];
+                }
+                acc[seleccion].push(producto);
+                return acc;
+            }, {});
 
-                setPerfumesPorMarca(agrupados);
+            setPerfumesPorMarca(agrupados);
         
         })
 
@@ -47,21 +47,25 @@ const [perfumesPorMarca, setPerfumesPorMarca] = useState({}); // Estado para gua
   }, [q]);
   if (loading) return <Loading />; // Muestra el componente de carga mientras se obtienen los datos
  if (resultados.length === 0) {
-    return <h1>No se encontarron perfumes para: "{q}"</h1>;
+    return (
+        <div className="dashboard">
+            <h1>No se encontraron productos para: "{q}"</h1>
+            <p>Intenta con otros términos de búsqueda.</p>
+        </div>
+    );
   }
 return (
-    <div className="dashboard ">
+    <div className="dashboard">
         <h1>Resultados de la búsqueda para: "{q}"</h1>
-        {Object.keys(perfumesPorMarca).map(marca => (
-                <div key={marca} className="marca-section">
-                    <h2 className="marca-title">{marca}</h2>
+        {Object.keys(perfumesPorMarca).sort((a, b) => a.localeCompare(b)).map(seleccion => (
+                <div key={seleccion} className="marca-section">
+                    <h2 className="marca-title">{seleccion}</h2>
                     <div className="perfume-list-seccion">
-                    <div className="perfume-list">
-                       
-                        {perfumesPorMarca[marca].map(perfume => (
-                            <PerfumeCard key={perfume.idperfume} perfume={perfume} />
-                        ))}
-                    </div>
+                        <div className="perfume-list">
+                            {(perfumesPorMarca[seleccion] ?? []).map(producto => (
+                                <PerfumeCard key={producto.idProduct} producto={producto} />
+                            ))}
+                        </div>
                     </div>
                 </div>
             ))}
