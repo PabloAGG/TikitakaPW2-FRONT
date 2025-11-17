@@ -322,14 +322,14 @@ const PedidosTemporales = () => {
     doc.text('NOTA:', 20, finalY + 78);
     doc.setFont('helvetica', 'normal');
     doc.text('Este es un comprobante de demostración. No se realizó ningún cargo real.', 35, finalY + 78);
-    doc.text('Para soporte contacta: tikitaka@demo.com | Tel: (555) 123-4567', 20, finalY + 85);
+    doc.text('Para soporte contacta: tikitaka@email.com | Tel: (555) 123-4567', 20, finalY + 85);
 
     // Footer
     doc.setTextColor(...primaryColor);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
     doc.text('¡Gracias por tu compra en Tikitaka!', 15, finalY + 105);
-    doc.text('www.tikitaka-demo.com', 15, finalY + 112);
+    doc.text('www.tikitakapw2.onrender.com', 15, finalY + 112);
 
     doc.save(`Comprobante-Tikitaka-${numeroOrden}.pdf`);
   };
