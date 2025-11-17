@@ -9,6 +9,90 @@ import API_URL from '../config/api';
 import { useCart } from '../context/CartContext';
 import './PerfumeDetail.css';
 
+// Estilos adicionales para el checkout success
+const successStyles = `
+  .checkout-success {
+    text-align: center;
+    padding: 3rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 0.6s ease-in-out;
+  }
+
+  .loading-dots {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .loading-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #3498db;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .loading-dots span:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .loading-dots span:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 60%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-20px);
+    }
+    80% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 80%, 100% {
+      transform: scale(0);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+`;
+
+// Inyectar estilos
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = successStyles;
+  document.head.appendChild(styleElement);
+}
+
 const DATOS_PAGO = {
   banco: 'Mercado Pago',
   titular: 'Tikitaka',
@@ -43,6 +127,21 @@ const PedidosTemporales = () => {
   const [processing, setProcessing] = useState(false);
   const [mensaje, setMensaje] = useState(null);
   const [error, setError] = useState(null);
+
+  // Auto-hide alerts after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (mensaje) {
+      const timer = setTimeout(() => setMensaje(null), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensaje]);
   const [paymentData, setPaymentData] = useState({
     metodo: 'tarjeta',
     titular: '',
@@ -97,24 +196,62 @@ const PedidosTemporales = () => {
 
   const generarPdf = (pedidosConfirmados, referencia) => {
     const doc = new jsPDF();
-    const fecha = new Date().toLocaleDateString('es-MX');
+    const fecha = new Date().toLocaleDateString('es-MX', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const numeroOrden = `TK-${Date.now().toString().slice(-8)}`;
 
-    doc.setFontSize(20);
-    doc.text('Comprobante de compra - Sillage', 10, 20);
+    // Colores del tema
+    const primaryColor = [52, 152, 219]; // Azul
+    const darkColor = [44, 62, 80]; // Gris oscuro
+    const lightGray = [248, 249, 250];
+
+    // Header con logo y título
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 35, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TIKITAKA', 15, 22);
+    
     doc.setFontSize(12);
-    doc.text(`Fecha: ${fecha}`, 10, 30);
-    if (referencia) {
-      doc.text(`Referencia de pago: ${referencia}`, 10, 38);
-    }
+    doc.setFont('helvetica', 'normal');
+    doc.text('Comprobante de Compra', 15, 30);
 
-    const tableColumn = ['Producto', 'Cantidad', 'Precio Unitario', 'Subtotal'];
+    // Información del pedido
+    doc.setTextColor(...darkColor);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMACIÓN DEL PEDIDO', 15, 50);
+    
+    // Línea separadora
+    doc.setDrawColor(...primaryColor);
+    doc.setLineWidth(0.5);
+    doc.line(15, 52, 195, 52);
+
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Número de orden: ${numeroOrden}`, 15, 62);
+    doc.text(`Fecha: ${fecha}`, 15, 70);
+    if (referencia) {
+      doc.text(`Referencia de pago: ${referencia}`, 15, 78);
+    }
+    doc.text(`Método de pago: ${paymentData.metodo.charAt(0).toUpperCase() + paymentData.metodo.slice(1)}`, 15, 86);
+
+    // Tabla de productos mejorada
+    const tableColumn = ['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal'];
     const tableRows = pedidosConfirmados.map((pedido) => {
       const producto = items.find((item) => item.productId === pedido.producto) ?? null;
       const precioUnitario = producto?.product?.precio ?? DEFAULT_PRICE;
       const subtotal = precioUnitario * pedido.cantidad;
       return [
         pedido.productoNombre || producto?.product?.nombre || 'Producto',
-        pedido.cantidad,
+        pedido.cantidad.toString(),
         currencyFormatter.format(precioUnitario),
         currencyFormatter.format(subtotal),
       ];
@@ -123,28 +260,78 @@ const PedidosTemporales = () => {
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 50,
+      startY: 95,
+      theme: 'grid',
       headStyles: {
-        fillColor: [26, 26, 26],
+        fillColor: primaryColor,
         textColor: [255, 255, 255],
         fontStyle: 'bold',
+        fontSize: 11,
+        halign: 'center',
+      },
+      bodyStyles: {
+        fontSize: 10,
+        cellPadding: 5,
       },
       alternateRowStyles: {
-        fillColor: [245, 245, 245],
+        fillColor: lightGray,
       },
+      columnStyles: {
+        0: { halign: 'left' },
+        1: { halign: 'center' },
+        2: { halign: 'right' },
+        3: { halign: 'right' },
+      },
+      margin: { left: 15, right: 15 },
     });
 
-    const finalY = doc.lastAutoTable.finalY;
-    doc.setFontSize(14);
-  doc.text(`Total del pedido: ${totalConFormato}`, 10, finalY + 15);
-  doc.setFontSize(12);
-  doc.text('Guía de pago (entorno de prueba)', 10, finalY + 25);
-  doc.text(`Banco: ${DATOS_PAGO.banco}`, 10, finalY + 33);
-  doc.text(`Titular: ${paymentData.titular || DATOS_PAGO.titular}`, 10, finalY + 41);
-  doc.text(`Número de cuenta: ${DATOS_PAGO.numeroCuenta}`, 10, finalY + 49);
-  doc.text('Gracias por tu compra.', 10, finalY + 63);
+    const finalY = doc.lastAutoTable.finalY + 10;
 
-    doc.save(`pedido-sillage-${Date.now()}.pdf`);
+    // Total con estilo mejorado
+    doc.setFillColor(...primaryColor);
+    doc.rect(15, finalY, 180, 15, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`TOTAL: ${totalConFormato}`, 20, finalY + 10);
+
+    // Información de pago
+    doc.setTextColor(...darkColor);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMACIÓN DE PAGO (DEMO)', 15, finalY + 30);
+    
+    doc.setDrawColor(...primaryColor);
+    doc.line(15, finalY + 32, 195, finalY + 32);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Banco: ${DATOS_PAGO.banco}`, 15, finalY + 42);
+    doc.text(`Titular: ${paymentData.titular || DATOS_PAGO.titular}`, 15, finalY + 50);
+    doc.text(`Número de cuenta: ${DATOS_PAGO.numeroCuenta}`, 15, finalY + 58);
+
+    // Nota importante
+    doc.setFillColor(255, 243, 205); // Amarillo suave
+    doc.rect(15, finalY + 68, 180, 20, 'F');
+    doc.setDrawColor(255, 193, 7); // Amarillo
+    doc.rect(15, finalY + 68, 180, 20, 'S');
+    
+    doc.setTextColor(133, 100, 4); // Texto amarillo oscuro
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('NOTA:', 20, finalY + 78);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Este es un comprobante de demostración. No se realizó ningún cargo real.', 35, finalY + 78);
+    doc.text('Para soporte contacta: tikitaka@demo.com | Tel: (555) 123-4567', 20, finalY + 85);
+
+    // Footer
+    doc.setTextColor(...primaryColor);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text('¡Gracias por tu compra en Tikitaka!', 15, finalY + 105);
+    doc.text('www.tikitaka-demo.com', 15, finalY + 112);
+
+    doc.save(`Comprobante-Tikitaka-${numeroOrden}.pdf`);
   };
 
   const handleCheckout = async (event) => {
@@ -193,8 +380,16 @@ const PedidosTemporales = () => {
     const data = await response.json();
     generarPdf(data.pedidos, paymentData.referencia);
     await clearCart();
-    setMensaje('Pedido confirmado en modo demostración. Revisa el PDF con tu comprobante.');
-      setPaymentData({ metodo: 'tarjeta', titular: '', referencia: '' });
+    setMensaje('¡Pedido confirmado exitosamente! 🎉 Tu comprobante se ha descargado automáticamente.');
+    setPaymentData({ metodo: 'tarjeta', titular: '', referencia: '' });
+    
+    // Redirigir después de 3 segundos para mostrar el mensaje
+    setTimeout(() => {
+      navigate('/mis-pedidos', { 
+        replace: true,
+        state: { success: 'Pedido confirmado. Puedes revisar el estado en "Mis Pedidos".' }
+      });
+    }, 3000);
     } catch (checkoutError) {
       console.error('Error durante el checkout:', checkoutError);
       if (checkoutError.code === 'AUTH_REQUIRED') {
@@ -230,8 +425,30 @@ const PedidosTemporales = () => {
   if (items.length === 0) {
     return (
       <div className="perfume-detail-container empty-cart">
-        <h2>Tu carrito está vacío.</h2>
-        {mensaje && <AlertMsg message={mensaje} type="success" />}
+        {mensaje ? (
+          <div className="checkout-success">
+            <div className="success-icon">✅</div>
+            <h2>¡Pedido realizado con éxito!</h2>
+            <AlertMsg message={mensaje} type="success" />
+            <p>Serás redirigido a "Mis Pedidos" en unos segundos...</p>
+            <div className="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h2>Tu carrito está vacío.</h2>
+            <p>Agrega algunos productos para comenzar tu compra.</p>
+            <button 
+              className="btn-primary"
+              onClick={() => navigate('/catalogo')}
+            >
+              Ver Catálogo
+            </button>
+          </>
+        )}
         {error && <AlertMsg message={error} type="error" />}
       </div>
     );

@@ -210,9 +210,11 @@
     border-radius: 6px;
     font-size: 0.85rem;
     background: white;
+    color: #000;
     cursor: pointer;
     width: 100%;
 }
+
 
 .estado-select:disabled {
     background: #f8f9fa;
@@ -224,6 +226,7 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    color: #000;
 }
 
 .no-pedidos {
