@@ -1,9 +1,8 @@
-import { jwtDecode } from 'jwt-decode';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API_URL from '../config/api'; // Importa la URL de la API
-import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import './header.css'; // Asegúrate de tener este archivo CSS
 const Header = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -71,8 +70,7 @@ const Header = () => {
   };
   const toggleSearchbar = () => {
     setSearchbarVisible(!searchbarVisible);
-  setSuggestions([]);
-
+    setSuggestions([]);
   };
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -98,11 +96,12 @@ const Header = () => {
         // Filtra los productos por nombre y selección
         const filtered = data.filter(
           (producto) =>
-            producto.nombre && producto.nombre.toLowerCase().includes(value.toLowerCase()) ||
-            (producto.seleccionNombre && producto.seleccionNombre.toLowerCase().includes(value.toLowerCase()))
+            (producto.nombre && producto.nombre.toLowerCase().includes(value.toLowerCase())) ||
+            (producto.seleccionNombre &&
+              producto.seleccionNombre.toLowerCase().includes(value.toLowerCase()))
         );
         setSuggestions(filtered.slice(0, 5)); // Máximo 5 sugerencias
-        
+
         // Programar que las sugerencias desaparezcan después de 5 segundos
         suggestionTimeoutRef.current = setTimeout(() => {
           setSuggestions([]);
