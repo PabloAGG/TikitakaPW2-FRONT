@@ -220,7 +220,7 @@ const GestionPedidos = () => {
                                 </span>
                             </div>
                             <div className="td">
-                                <small>{formatearFecha(pedido.created_at)}</small>
+                                <small>{formatearFecha(pedido.fecha || pedido.created_at)}</small>
                             </div>
                             <div className="td">
                                 <div className="acciones">

@@ -234,6 +234,9 @@ const Header = () => {
             <Link to="/admin/pedidos" className="nav-link" onClick={() => setMenuAbierto(false)}>
               <i className="fas fa-clipboard-list"></i> Gestión Pedidos
             </Link>
+            <Link to="/admin/reportes" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              <i className="fas fa-chart-bar"></i> Reportes
+            </Link>
           </>
         )}
         {userSesion && (
