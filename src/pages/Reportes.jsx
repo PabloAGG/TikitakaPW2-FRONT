@@ -48,10 +48,15 @@ function Reportes() {
         pedidos.json(),
       ]);
 
-      setProductosVendidos(vendidosData);
-      setProductosCalificados(calificadosData);
-      setUsuariosNuevos(nuevosData);
-      setUsuariosPedidos(pedidosData);
+      setProductosVendidos(Array.isArray(vendidosData) ? vendidosData : []);
+      setProductosCalificados(Array.isArray(calificadosData) ? calificadosData : []);
+      setUsuariosNuevos(Array.isArray(nuevosData) ? nuevosData : []);
+      setUsuariosPedidos(Array.isArray(pedidosData) ? pedidosData : []);
+      
+      // Log para debugging
+      if (!Array.isArray(nuevosData)) {
+        console.error('Error en usuarios nuevos:', nuevosData);
+      }
     } catch (error) {
       console.error('Error al cargar reportes:', error);
     } finally {
