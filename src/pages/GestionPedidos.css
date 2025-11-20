@@ -1,0 +1,346 @@
+/* GestionPedidos.css */
+.gestion-pedidos {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.gestion-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.gestion-header h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.gestion-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.acceso-denegado {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8d7da;
+    border-radius: 12px;
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.acceso-denegado h2 {
+    color: #721c24;
+    margin-bottom: 1rem;
+}
+
+.acceso-denegado p {
+    color: #721c24;
+}
+
+/* Estadísticas */
+.estadisticas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #3498db;
+}
+
+.stat-numero {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Filtros */
+.filtros {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filtros label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.filtro-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.filtro-select:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Tabla de pedidos */
+.pedidos-tabla {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.tabla-header {
+    display: grid;
+    grid-template-columns: 80px 200px 1fr 100px 120px 140px 150px;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.tabla-fila {
+    display: grid;
+    grid-template-columns: 80px 200px 1fr 100px 120px 140px 150px;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.tabla-fila:hover {
+    background: #f8f9fa;
+}
+
+.tabla-fila:last-child {
+    border-bottom: none;
+}
+
+.th, .td {
+    padding: 0.5rem;
+}
+
+.th {
+    font-weight: 600;
+    color: #2c3e50;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.cliente-info {
+    font-size: 0.9rem;
+}
+
+.producto-info-mini strong {
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.cantidad-badge {
+    background: #e9ecef;
+    color: #2c3e50;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.estado-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.estado-carrito {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.estado-pendiente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.estado-confirmado {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.estado-completado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.estado-cancelado {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.estado-select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: white;
+    color: #000;
+    cursor: pointer;
+    width: 100%;
+}
+
+
+.estado-select:disabled {
+    background: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.acciones {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    color: #000;
+}
+
+.no-pedidos {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.no-pedidos-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.no-pedidos h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.no-pedidos p {
+    color: #7f8c8d;
+}
+
+.totales {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 60px 150px 1fr 80px 100px 120px 130px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gestion-pedidos {
+        padding: 1rem;
+    }
+    
+    .estadisticas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-numero {
+        font-size: 2rem;
+    }
+    
+    .filtros {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .filtro-select {
+        width: 100%;
+    }
+    
+    /* Tabla responsive - mostrar como cards */
+    .pedidos-tabla {
+        display: block;
+    }
+    
+    .tabla-header {
+        display: none;
+    }
+    
+    .tabla-fila {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    .td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .td:last-child {
+        border-bottom: none;
+    }
+    
+    .td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #2c3e50;
+        margin-right: 1rem;
+    }
+    
+    .gestion-header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .estadisticas {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-numero {
+        font-size: 1.8rem;
+    }
+}

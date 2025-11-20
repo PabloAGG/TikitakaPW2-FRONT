@@ -17,6 +17,8 @@ const Login = lazy(()=> import ('./pages/Login'));
 const Registro = lazy(()=>import ('./pages/Registro'));
 const Perfil = lazy(()=>import ('./pages/Perfil'));
 const ProductoEdit = lazy(()=>import ('./pages/ProductoEdit'));
+const MisPedidos = lazy(()=>import ('./pages/MisPedidos'));
+const GestionPedidos = lazy(()=>import ('./pages/GestionPedidos'));
 function App() {
   
   return (
@@ -51,6 +53,12 @@ function App() {
           <Route path='/admin/crear' element={
             <AdminRoute>  
               <ProductoEdit isCreating={true} />
+            </AdminRoute>
+          }/>
+          <Route path='/mis-pedidos' element={<MisPedidos />} />
+          <Route path='/admin/pedidos' element={
+            <AdminRoute>
+              <GestionPedidos />
             </AdminRoute>
           }/>
 
