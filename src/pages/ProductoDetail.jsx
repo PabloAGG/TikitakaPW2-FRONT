@@ -6,8 +6,8 @@ import Loading from '../componentes/loading'; // Componente de carga
 import MediaCarousel from '../componentes/MediaCarousel'; // Nuevo carrusel
 import ProductoCard from '../componentes/PerfumeCard';
 import API_URL from '../config/api';
-import './PerfumeDetail.css';
 import { useCart } from '../context/CartContext';
+import './PerfumeDetail.css';
 const ProductoDetail = () => {
   // useParams nos da un objeto con los parámetros, en este caso { id: '...' }
   const { id } = useParams();
@@ -53,7 +53,7 @@ const ProductoDetail = () => {
       return '';
     }
   };
- const AgregarPedido = async (e) => {
+  const AgregarPedido = async (e) => {
     e.stopPropagation();
     const alreadyInCart = items.some((item) => item.productId === producto.idProduct);
 
@@ -362,18 +362,22 @@ const ProductoDetail = () => {
             <p>
               <strong>Género:</strong> {producto.genero}
             </p>
-            {producto.top && <p className="destacado-badge">⭐ Producto Destacado</p>}
+            <p className="detail-price">
+              <strong>Precio:</strong> $
+              {producto.precio ? Number(producto.precio).toFixed(2) : '300.00'}
+            </p>
+            {producto.top && <p className="destacado-badge">Producto Destacado</p>}
           </div>
           <div className="detail-rating">
-              <Rating
-                name="average-rating"
-                value={estrellas.promedio}
-                readOnly
-                precision={0.1}
-                size="large"
-              />
-            
-            
+            <Rating
+              name="average-rating"
+              value={estrellas.promedio}
+              readOnly
+              precision={0.1}
+              size="large"
+              icon={<span style={{ fontSize: '1.5em' }}>⚽</span>}
+              emptyIcon={<span style={{ fontSize: '1.5em', opacity: 0.3 }}>⚽</span>}
+            />
 
             {/* Sección para calificar */}
             <Box
@@ -396,10 +400,12 @@ const ProductoDetail = () => {
                   }}
                   size="large"
                   precision={1}
+                  icon={<span style={{ fontSize: '1.5em' }}>⚽</span>}
+                  emptyIcon={<span style={{ fontSize: '1.5em', opacity: 0.3 }}>⚽</span>}
                 />
                 <Typography variant="body2">
                   {nuevaCalificacion > 0 &&
-                    `${nuevaCalificacion} estrella${nuevaCalificacion !== 1 ? 's' : ''}`}
+                    `${nuevaCalificacion} balón${nuevaCalificacion !== 1 ? 'es' : ''}`}
                 </Typography>
               </Box>
 
@@ -430,11 +436,10 @@ const ProductoDetail = () => {
               </Box>
             )}
           </div>
-           <button className="perfume-button addBtn" onClick={AgregarPedido}>
-              <i className="fa-solid fa-cart-plus"></i>
-            </button>
+          <button className="perfume-button addBtn" onClick={AgregarPedido}>
+            <i className="fa-solid fa-cart-plus"></i>
+          </button>
         </div>
-        
       </div>
 
       <div className="detail-comments">

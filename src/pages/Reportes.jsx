@@ -52,7 +52,7 @@ function Reportes() {
       setProductosCalificados(Array.isArray(calificadosData) ? calificadosData : []);
       setUsuariosNuevos(Array.isArray(nuevosData) ? nuevosData : []);
       setUsuariosPedidos(Array.isArray(pedidosData) ? pedidosData : []);
-      
+
       // Log para debugging
       if (!Array.isArray(nuevosData)) {
         console.error('Error en usuarios nuevos:', nuevosData);
@@ -77,32 +77,32 @@ function Reportes() {
 
   return (
     <div className="reportes-container">
-      <h1 className="reportes-titulo">📊 Reportes y Estadísticas</h1>
+      <h1 className="reportes-titulo">Reportes y Estadísticas</h1>
 
       <div className="reportes-tabs">
         <button
           className={`tab-btn ${activeTab === 'productos-vendidos' ? 'active' : ''}`}
           onClick={() => setActiveTab('productos-vendidos')}
         >
-          🏆 Más Vendidos
+          Más Vendidos
         </button>
         <button
           className={`tab-btn ${activeTab === 'productos-calificados' ? 'active' : ''}`}
           onClick={() => setActiveTab('productos-calificados')}
         >
-          ⭐ Mejor Calificados
+          Mejor Calificados
         </button>
         <button
           className={`tab-btn ${activeTab === 'usuarios-nuevos' ? 'active' : ''}`}
           onClick={() => setActiveTab('usuarios-nuevos')}
         >
-          👤 Usuarios Nuevos
+          Usuarios Nuevos
         </button>
         <button
           className={`tab-btn ${activeTab === 'usuarios-pedidos' ? 'active' : ''}`}
           onClick={() => setActiveTab('usuarios-pedidos')}
         >
-          🛍️ Más Pedidos
+          Más Pedidos
         </button>
       </div>
 
@@ -193,7 +193,7 @@ function Reportes() {
                         <td>{producto.genero}</td>
                         <td>{producto.seleccionNombre || 'N/A'}</td>
                         <td className="texto-destacado">
-                          ⭐ {parseFloat(producto.promedio_estrellas).toFixed(1)}
+                          {parseFloat(producto.promedio_estrellas).toFixed(1)}
                         </td>
                         <td>{producto.num_calificaciones}</td>
                       </tr>

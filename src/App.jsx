@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import './Mundial2026.css';
 import Footer from './componentes/footer';
 import Header from './componentes/header';
 import Loading from './componentes/loading';

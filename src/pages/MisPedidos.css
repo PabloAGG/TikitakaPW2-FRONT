@@ -1,249 +1,260 @@
 /* MisPedidos.css */
 .mis-pedidos {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
 }
 
 .mis-pedidos-header {
-    text-align: center;
-    margin-bottom: 3rem;
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
 .mis-pedidos-header h1 {
-    color: #2c3e50;
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .mis-pedidos-header p {
-    color: #7f8c8d;
-    font-size: 1.1rem;
+  color: #7f8c8d;
+  font-size: 1.1rem;
 }
 
 .no-pedidos {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-    margin-top: 2rem;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 2rem;
 }
 
 .no-pedidos-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: #95a5a6;
+}
+
+.no-pedidos-icon i {
+  font-size: 4rem;
+  color: #95a5a6;
 }
 
 .no-pedidos h3 {
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
 }
 
 .no-pedidos p {
-    color: #7f8c8d;
+  color: #7f8c8d;
 }
 
 .pedidos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
 .pedido-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .pedido-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
 .pedido-header {
-    background: #f8f9fa;
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .pedido-id {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1.1rem;
 }
 
 .estado-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .estado-pendiente {
-    background: #fff3cd;
-    color: #856404;
+  background: #fff3cd;
+  color: #856404;
 }
 
 .estado-confirmado {
-    background: #d1ecf1;
-    color: #0c5460;
+  background: #d1ecf1;
+  color: #0c5460;
 }
 
 .estado-completado {
-    background: #d4edda;
-    color: #155724;
+  background: #d4edda;
+  color: #155724;
 }
 
 .estado-cancelado {
-    background: #f8d7da;
-    color: #721c24;
+  background: #f8d7da;
+  color: #721c24;
 }
 
 .pedido-contenido {
-    padding: 1.5rem;
+  padding: 1.5rem;
 }
 
 .producto-info {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .producto-imagen {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .producto-detalles {
-    flex: 1;
+  flex: 1;
 }
 
 .producto-detalles h3 {
-    color: #2c3e50;
-    margin: 0 0 0.5rem 0;
-    font-size: 1.2rem;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
 }
 
 .producto-categoria {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin: 0 0 0.25rem 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0 0 0.25rem 0;
 }
 
 .producto-genero {
-    color: #6c757d;
-    font-size: 0.85rem;
-    margin: 0 0 0.5rem 0;
-    text-transform: capitalize;
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem 0;
+  text-transform: capitalize;
 }
 
 .cantidad {
-    color: #2c3e50;
-    font-size: 1rem;
+  color: #2c3e50;
+  font-size: 1rem;
 }
 
 .pedido-fecha {
-    margin-bottom: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e9ecef;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
 }
 
 .pedido-fecha small {
-    color: #6c757d;
-    font-size: 0.85rem;
+  color: #6c757d;
+  font-size: 0.85rem;
 }
 
 .pedido-acciones {
-    text-align: center;
-    margin-top: 1.5rem;
+  text-align: center;
+  margin-top: 1.5rem;
 }
 
 .btn-completar {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-bottom: 0.5rem;
-    display: block;
-    width: 100%;
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-bottom: 0.5rem;
+  display: block;
+  width: 100%;
 }
 
 .btn-completar:hover {
-    background: #218838;
+  background: #218838;
 }
 
 .ayuda-texto {
-    color: #6c757d;
-    font-size: 0.8rem;
-    display: block;
+  color: #6c757d;
+  font-size: 0.8rem;
+  display: block;
 }
 
 .pedido-completado {
-    text-align: center;
-    margin-top: 1rem;
-    padding: 1rem;
-    background: #d4edda;
-    border-radius: 8px;
-    color: #155724;
-    font-weight: 600;
+  text-align: center;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #d4edda;
+  border-radius: 8px;
+  color: #155724;
+  font-weight: 600;
 }
 
 .completado-icon {
-    margin-right: 0.5rem;
-    font-size: 1.2rem;
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  color: #2e7d32;
+}
+
+.completado-icon i {
+  color: #2e7d32;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .mis-pedidos {
-        padding: 1rem;
-    }
-    
-    .pedidos-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .producto-info {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .producto-imagen {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .mis-pedidos-header h1 {
-        font-size: 2rem;
-    }
+  .mis-pedidos {
+    padding: 1rem;
+  }
+
+  .pedidos-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .producto-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .producto-imagen {
+    width: 100px;
+    height: 100px;
+  }
+
+  .mis-pedidos-header h1 {
+    font-size: 2rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .pedido-header {
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: center;
-    }
-    
-    .pedido-contenido {
-        padding: 1rem;
-    }
+  .pedido-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .pedido-contenido {
+    padding: 1rem;
+  }
 }

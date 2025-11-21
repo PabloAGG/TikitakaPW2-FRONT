@@ -131,29 +131,31 @@
 .dltPerf,
 .completeCarr {
   display: inline-block;
-  padding: 8px 16px;
+  padding: 12px 24px;
   font-size: 1em;
-  border-radius: 4px;
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: none;
   text-decoration: none;
-  background-color: #1a1a1a;
+  background: linear-gradient(135deg, #006847 0%, #003d82 100%);
   color: white;
 }
 
 .dltPerf:hover {
-  background-color: #ff4d4d;
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #d52b1e 0%, #006847 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(213, 43, 30, 0.4);
+  transform: translateY(-2px);
 }
 
 .completeCarr:hover {
-  background-color: #d4af37;
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #d52b1e 0%, #003d82 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(213, 43, 30, 0.4);
+  transform: translateY(-2px);
 }
 
 .quantity-section {
@@ -166,13 +168,13 @@
 .quantity-controls {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 2px solid #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .quantity-btn {
-  background-color: #1a1a1a;
+  background: linear-gradient(135deg, #006847 0%, #003d82 100%);
   border: none;
   cursor: pointer;
   font-size: 1.5rem;
@@ -180,12 +182,14 @@
   height: 40px;
   line-height: 40px;
   text-align: center;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   color: white;
 }
 
 .quantity-btn:hover {
-  background-color: #d4af37;
+  background: linear-gradient(135deg, #d52b1e 0%, #003d82 100%);
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
 .quantity-display {
@@ -665,7 +669,8 @@
   .carousel-button {
     align-self: flex-end;
   }
-}@media (max-width: 992px) {
+}
+@media (max-width: 992px) {
   .detail-main {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -1279,3 +1284,26 @@
   }
 }
 
+/* Estilos para el precio del producto */
+.detail-price {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #d52b1e;
+  margin: 8px 0;
+  text-transform: none;
+}
+
+/* Badge de producto destacado */
+.destacado-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #d52b1e 0%, #ffd700 100%);
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 8px 0;
+}

@@ -3,27 +3,32 @@
   border-radius: 8px;
   padding: 30px 16px;
   text-align: center;
-      flex-shrink: 0;
+  flex-shrink: 0;
   width: 200px;
   margin: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   cursor: pointer;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 .top-badge {
-  background-color: #d4af37;
-  color: black;
+  background: linear-gradient(135deg, #d52b1e 0%, #ffd700 100%);
+  color: #ffffff;
   font-weight: bold;
-  padding: 2px 8px;
+  font-size: 0.75rem;
+  padding: 6px 12px;
   position: absolute;
   top: 8px;
   right: 0px;
   z-index: 1;
+  border-radius: 4px 0 0 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 .perfume-card:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
 }
 .perfume-img-container {
   display: flex;
@@ -34,13 +39,13 @@
   height: 150px;
   object-fit: cover;
   margin-bottom: 12px;
-border-radius: 5px;
+  border-radius: 5px;
 }
-#btMMCard{
+#btMMCard {
   position: absolute;
   justify-self: flex-start;
   align-self: start;
-  top: 40%; 
+  top: 40%;
   left: 60%;
   height: 100px;
   max-width: 75px;
@@ -64,13 +69,19 @@ border-radius: 5px;
   font-size: 0.85rem;
   color: #555;
 }
-.perfume-gen{
+
+.perfume-price {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #d52b1e;
+  margin: 12px 0;
+}
+.perfume-gen {
   font-size: 0.9em;
   color: #666;
   margin-bottom: 8px;
   text-transform: capitalize;
 }
-
 
 .perfume-card-buttons {
   display: flex;
@@ -80,53 +91,61 @@ border-radius: 5px;
   margin-top: 12px;
 }
 
-
 .perfume-button {
   display: inline-block;
-  padding: 8px 16px;
-  font-size: 1em;
-  border-radius: 4px;
+  padding: 10px 18px;
+  font-size: 0.95em;
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   border: none;
   text-decoration: none;
 }
 
 .addBtn {
-  background-color: #d4af37;
-  color: #1a1a1a;
+  background: linear-gradient(135deg, #006847 0%, #003d82 100%);
+  color: #ffffff;
 }
 
 .addBtn:hover {
-  background-color: #1a1a1a;
-  color: #fffbe6;
+  background: linear-gradient(135deg, #d52b1e 0%, #003d82 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(213, 43, 30, 0.4);
+  transform: translateY(-2px);
 }
 
 .detailBtn {
-  background-color: #1a1a1a;
+  background-color: #003d82;
   color: white;
 }
 
 .detailBtn:hover {
-  background-color: #d4af37;
-  color: #ddd;
+  background: linear-gradient(135deg, #006847 0%, #003d82 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 61, 130, 0.4);
+  transform: translateY(-2px);
 }
 
 .bajaBtn {
-  background-color: #b72525;
+  background-color: #d32f2f;
   color: white;
 }
+
 .bajaBtn:hover {
-  background-color: #b10c0c;
+  background-color: #b71c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
 }
+
 .editBtn {
-  background-color: #168e46;
+  background-color: #2e7d32;
   color: white;
 }
+
 .editBtn:hover {
-  background-color: #164428;
+  background-color: #1b5e20;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
-
-

@@ -7,6 +7,7 @@ import CloudinaryImage from '../componentes/CloudinaryImage';
 import Loading from '../componentes/loading';
 import API_URL from '../config/api';
 import { useCart } from '../context/CartContext';
+import './CarritoResponsive.css';
 import './PerfumeDetail.css';
 
 // Estilos adicionales para el checkout success
@@ -22,6 +23,11 @@ const successStyles = `
     font-size: 4rem;
     margin-bottom: 1rem;
     animation: bounce 0.6s ease-in-out;
+    color: #2e7d32;
+  }
+
+  .success-icon i {
+    color: #2e7d32;
   }
 
   .loading-dots {
@@ -201,7 +207,7 @@ const PedidosTemporales = () => {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
     const numeroOrden = `TK-${Date.now().toString().slice(-8)}`;
 
@@ -213,12 +219,12 @@ const PedidosTemporales = () => {
     // Header con logo y título
     doc.setFillColor(...primaryColor);
     doc.rect(0, 0, 210, 35, 'F');
-    
+
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
     doc.text('TIKITAKA', 15, 22);
-    
+
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text('Comprobante de Compra', 15, 30);
@@ -228,7 +234,7 @@ const PedidosTemporales = () => {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.text('INFORMACIÓN DEL PEDIDO', 15, 50);
-    
+
     // Línea separadora
     doc.setDrawColor(...primaryColor);
     doc.setLineWidth(0.5);
@@ -241,7 +247,11 @@ const PedidosTemporales = () => {
     if (referencia) {
       doc.text(`Referencia de pago: ${referencia}`, 15, 78);
     }
-    doc.text(`Método de pago: ${paymentData.metodo.charAt(0).toUpperCase() + paymentData.metodo.slice(1)}`, 15, 86);
+    doc.text(
+      `Método de pago: ${paymentData.metodo.charAt(0).toUpperCase() + paymentData.metodo.slice(1)}`,
+      15,
+      86
+    );
 
     // Tabla de productos mejorada
     const tableColumn = ['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal'];
@@ -300,7 +310,7 @@ const PedidosTemporales = () => {
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.text('INFORMACIÓN DE PAGO (DEMO)', 15, finalY + 30);
-    
+
     doc.setDrawColor(...primaryColor);
     doc.line(15, finalY + 32, 195, finalY + 32);
 
@@ -315,13 +325,17 @@ const PedidosTemporales = () => {
     doc.rect(15, finalY + 68, 180, 20, 'F');
     doc.setDrawColor(255, 193, 7); // Amarillo
     doc.rect(15, finalY + 68, 180, 20, 'S');
-    
+
     doc.setTextColor(133, 100, 4); // Texto amarillo oscuro
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text('NOTA:', 20, finalY + 78);
     doc.setFont('helvetica', 'normal');
-    doc.text('Este es un comprobante de demostración. No se realizó ningún cargo real.', 35, finalY + 78);
+    doc.text(
+      'Este es un comprobante de demostración. No se realizó ningún cargo real.',
+      35,
+      finalY + 78
+    );
     doc.text('Para soporte contacta: tikitaka@email.com | Tel: (555) 123-4567', 20, finalY + 85);
 
     // Footer
@@ -377,19 +391,21 @@ const PedidosTemporales = () => {
         throw new Error(errorData.error || 'No se pudo registrar el pedido');
       }
 
-    const data = await response.json();
-    generarPdf(data.pedidos, paymentData.referencia);
-    await clearCart();
-    setMensaje('¡Pedido confirmado exitosamente! 🎉 Tu comprobante se ha descargado automáticamente.');
-    setPaymentData({ metodo: 'tarjeta', titular: '', referencia: '' });
-    
-    // Redirigir después de 3 segundos para mostrar el mensaje
-    setTimeout(() => {
-      navigate('/mis-pedidos', { 
-        replace: true,
-        state: { success: 'Pedido confirmado. Puedes revisar el estado en "Mis Pedidos".' }
-      });
-    }, 3000);
+      const data = await response.json();
+      generarPdf(data.pedidos, paymentData.referencia);
+      await clearCart();
+      setMensaje(
+        '¡Pedido confirmado exitosamente! 🎉 Tu comprobante se ha descargado automáticamente.'
+      );
+      setPaymentData({ metodo: 'tarjeta', titular: '', referencia: '' });
+
+      // Redirigir después de 3 segundos para mostrar el mensaje
+      setTimeout(() => {
+        navigate('/mis-pedidos', {
+          replace: true,
+          state: { success: 'Pedido confirmado. Puedes revisar el estado en "Mis Pedidos".' },
+        });
+      }, 3000);
     } catch (checkoutError) {
       console.error('Error durante el checkout:', checkoutError);
       if (checkoutError.code === 'AUTH_REQUIRED') {
@@ -427,7 +443,9 @@ const PedidosTemporales = () => {
       <div className="perfume-detail-container empty-cart">
         {mensaje ? (
           <div className="checkout-success">
-            <div className="success-icon">✅</div>
+            <div className="success-icon">
+              <i className="fas fa-check-circle"></i>
+            </div>
             <h2>¡Pedido realizado con éxito!</h2>
             <AlertMsg message={mensaje} type="success" />
             <p>Serás redirigido a "Mis Pedidos" en unos segundos...</p>
@@ -441,10 +459,7 @@ const PedidosTemporales = () => {
           <>
             <h2>Tu carrito está vacío.</h2>
             <p>Agrega algunos productos para comenzar tu compra.</p>
-            <button 
-              className="btn-primary"
-              onClick={() => navigate('/catalogo')}
-            >
+            <button className="btn-primary" onClick={() => navigate('/catalogo')}>
               Ver Catálogo
             </button>
           </>
@@ -472,12 +487,12 @@ const PedidosTemporales = () => {
 
       <div className="carrito-contenido">
         <div className="pedidos-list">
-        {items.map((item) => {
-          const { product, productId, quantity } = item;
-          const precioUnitario = product?.precio ?? DEFAULT_PRICE;
-          const subtotal = precioUnitario * quantity;
+          {items.map((item) => {
+            const { product, productId, quantity } = item;
+            const precioUnitario = product?.precio ?? DEFAULT_PRICE;
+            const subtotal = precioUnitario * quantity;
 
-          return (
+            return (
               <div className="carrito-item" key={productId}>
                 <div className="carrito-item-media">
                   <div className="carrito-item-media-wrapper">
@@ -547,9 +562,9 @@ const PedidosTemporales = () => {
                   </div>
                 </div>
               </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
         <aside className="carrito-resumen">
           <div className="total-section">
             <div className="total-header">

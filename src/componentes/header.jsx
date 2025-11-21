@@ -149,8 +149,8 @@ const Header = () => {
       <input
         type="text"
         className="search-bar"
-        placeholder="Buscar perfumes..."
-        aria-label="Buscar perfumes"
+        placeholder="Buscar articulos..."
+        aria-label="Buscar articulos"
         value={searchTerm}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
@@ -244,12 +244,6 @@ const Header = () => {
           </Link>
         )}
       </nav>
-
-      <div className="logo-container">
-        <Link to="/" className="logo-link">
-          <img src="/IMG/LogoPrin.png" alt="Logo de la empresa" className="logo" />
-        </Link>
-      </div>
 
       <div className="user-menu">
         {!isMobile && searchbarComponent}

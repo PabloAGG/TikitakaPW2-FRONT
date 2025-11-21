@@ -1,0 +1,235 @@
+/* Tema Mundial 2026 - México, Estados Unidos, Canadá */
+/* Paleta: Verde (México) #006847, Azul (USA) #003d82, Rojo (Canadá) #d52b1e */
+
+/* Sobrescribir estilos de ratings con colores Mundial */
+.user-rating-section .MuiRating-root {
+  color: #ffd700 !important;
+}
+
+.user-rating-section .MuiButton-contained {
+  background: linear-gradient(135deg, #006847 0%, #003d82 100%) !important;
+}
+
+.user-rating-section .MuiButton-contained:hover {
+  background: linear-gradient(135deg, #d52b1e 0%, #003d82 100%) !important;
+}
+
+.average-rating .MuiRating-root {
+  color: #ffd700 !important;
+}
+
+/* Botones de carrusel */
+.carousel-button:hover {
+  background: linear-gradient(135deg, #d52b1e 0%, #003d82 100%) !important;
+}
+
+.carousel-button {
+  background-color: #003d82 !important;
+}
+
+/* Botón addBtn en detalle */
+.detail-info-container .addBtn {
+  background: linear-gradient(135deg, #006847 0%, #003d82 100%) !important;
+  color: #ffffff !important;
+}
+
+.detail-info-container .addBtn:hover {
+  background: linear-gradient(135deg, #d52b1e 0%, #003d82 100%) !important;
+}
+
+/* Estados de pedidos con colores Mundial */
+.estado-confirmado {
+  background: rgba(0, 104, 71, 0.1) !important;
+  color: #006847 !important;
+  border: 1px solid #006847 !important;
+}
+
+.estado-completado {
+  background: rgba(0, 61, 130, 0.1) !important;
+  color: #003d82 !important;
+  border: 1px solid #003d82 !important;
+}
+
+/* Botones en Dashboard y Admin */
+.stat-card {
+  border-left: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #006847, #003d82, #d52b1e) border-box !important;
+}
+
+/* Tabs activos */
+.tab-btn.active {
+  background: linear-gradient(135deg, #006847 0%, #003d82 50%, #d52b1e 100%) !important;
+  color: white !important;
+}
+
+.tab-btn:hover {
+  background: rgba(0, 61, 130, 0.1) !important;
+  color: #003d82 !important;
+}
+
+/* Links y botones de acción */
+a:hover,
+button:hover {
+  transition: all 0.3s ease !important;
+}
+
+/* Formularios y inputs con foco */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #003d82 !important;
+  box-shadow: 0 0 0 3px rgba(0, 61, 130, 0.1) !important;
+}
+
+/* Checkboxes y radios */
+input[type='checkbox']:checked,
+input[type='radio']:checked {
+  background-color: #006847 !important;
+  border-color: #006847 !important;
+}
+
+/* Success messages */
+.success-icon,
+.success-icon i,
+.completado-icon,
+.completado-icon i {
+  color: #006847 !important;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border-top-color: #d52b1e !important;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #006847 0%, #003d82 50%, #d52b1e 100%) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #d52b1e 0%, #003d82 50%, #006847 100%) !important;
+}
+
+/* Bordes y sombras con tema Mundial */
+.card-mundial {
+  border-left: 3px solid #006847;
+  border-right: 3px solid #d52b1e;
+  border-top: 1px solid #003d82;
+  border-bottom: 1px solid #003d82;
+}
+
+/* Gradientes de fondo para secciones */
+.hero-section {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 104, 71, 0.05) 0%,
+    rgba(0, 61, 130, 0.05) 50%,
+    rgba(213, 43, 30, 0.05) 100%
+  );
+}
+
+/* Efectos hover para cards */
+.perfume-card:hover,
+.pedido-card:hover,
+.producto-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 61, 130, 0.15) !important;
+}
+
+/* Badges y etiquetas especiales */
+.badge-mundial {
+  background: linear-gradient(135deg, #006847 0%, #003d82 50%, #d52b1e 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Texto destacado */
+.text-mundial {
+  background: linear-gradient(135deg, #006847 0%, #003d82 50%, #d52b1e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: bold;
+}
+
+/* Dividers con tema */
+.divider-mundial {
+  height: 3px;
+  background: linear-gradient(90deg, #006847 0%, #003d82 50%, #d52b1e 100%);
+  border: none;
+  margin: 2rem 0;
+}
+
+/* Footer con gradiente */
+.footer {
+  background: linear-gradient(135deg, #006847 0%, #003d82 50%, #d52b1e 100%) !important;
+}
+
+/* Overlay para modales */
+.modal-overlay {
+  background: rgba(0, 61, 130, 0.4) !important;
+}
+
+/* Alertas con tema Mundial */
+.alert-success {
+  background-color: rgba(0, 104, 71, 0.1) !important;
+  border-left: 4px solid #006847 !important;
+  color: #006847 !important;
+}
+
+.alert-info {
+  background-color: rgba(0, 61, 130, 0.1) !important;
+  border-left: 4px solid #003d82 !important;
+  color: #003d82 !important;
+}
+
+.alert-warning {
+  background-color: rgba(213, 43, 30, 0.1) !important;
+  border-left: 4px solid #d52b1e !important;
+  color: #d52b1e !important;
+}
+
+/* Animación para elementos destacados */
+@keyframes mundial-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 104, 71, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 104, 71, 0);
+  }
+}
+
+.pulse-mundial {
+  animation: mundial-pulse 2s infinite;
+}
+
+/* Botones de paginación */
+.pagination-btn {
+  background: white;
+  border: 2px solid #003d82 !important;
+  color: #003d82 !important;
+}
+
+.pagination-btn:hover {
+  background: #003d82 !important;
+  color: white !important;
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #006847 0%, #003d82 100%) !important;
+  color: white !important;
+}
+
+/* Tooltips */
+.tooltip-mundial {
+  background: #003d82 !important;
+  color: white !important;
+}
+
+.tooltip-mundial::before {
+  border-top-color: #003d82 !important;
+}

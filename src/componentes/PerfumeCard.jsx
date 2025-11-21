@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Rating } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API_URL from '../config/api';
 import { useCart } from '../context/CartContext';
@@ -185,7 +185,7 @@ const ProductoCard = ({ producto, isAdmin = false }) => {
           onCancel={cerrarAlert}
         />
       )}
-      {producto.top && <div className="top-badge">⭐ Producto Destacado</div>}
+      {producto.top && <div className="top-badge">Producto Destacado</div>}
       <div className="perfume-img-container">
         {imagenUrl ? (
           <CloudinaryImage
@@ -213,7 +213,14 @@ const ProductoCard = ({ producto, isAdmin = false }) => {
       <h3 className="perfume-name">{producto.nombre}</h3>
 
       <div className="perfume-rating">
-        <Rating value={ratingInfo.promedio} precision={0.5} readOnly size="small" />
+        <Rating
+          value={ratingInfo.promedio}
+          precision={0.5}
+          readOnly
+          size="small"
+          icon={<span style={{ fontSize: '1.2em' }}>⚽</span>}
+          emptyIcon={<span style={{ fontSize: '1.2em', opacity: 0.3 }}>⚽</span>}
+        />
         <span className="perfume-rating-text">
           {ratingLoaded
             ? ratingInfo.total > 0
@@ -222,6 +229,10 @@ const ProductoCard = ({ producto, isAdmin = false }) => {
             : 'Cargando...'}
         </span>
       </div>
+
+      <p className="perfume-price">
+        ${producto.precio ? Number(producto.precio).toFixed(2) : '300.00'}
+      </p>
 
       <div className="perfume-card-buttons">
         {isAdmin ? (

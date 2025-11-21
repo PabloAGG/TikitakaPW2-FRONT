@@ -1,14 +1,14 @@
 .header {
   display: flex;
-  justify-content: space-between; /* Esto separa logo y user-menu */
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  background-color: #3229d3;
-  color: #ece8e8;
+  background: linear-gradient(135deg, #006847 0%, #003d82 50%, #d52b1e 100%);
+  color: #ffffff;
   min-height: 60px;
   height: auto;
-  padding: 10px 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   flex-wrap: wrap;
   z-index: 1000;
   position: sticky;
@@ -16,12 +16,24 @@
   transition: transform 0.3s ease-in-out;
 }
 
-.logo {
-    height: 70px;
-  margin: 0;
+.header-logo-link {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  align-self: center;
-  cursor: pointer;
+  align-items: center;
+  z-index: 999;
+  transition: transform 0.3s ease;
+}
+
+.header-logo-link:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+.header-logo {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-links {
@@ -31,7 +43,7 @@
   left: -100%;
   width: 50%;
   height: 100vh;
-  background-color: #3229d3;
+  background: linear-gradient(180deg, #006847 0%, #003d82 50%, #d52b1e 100%);
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -45,7 +57,6 @@
   left: 0;
   /* Lo trae a la vista */
 }
-
 
 /* Animación del ícono de hamburguesa a una 'X' */
 .hamburger.activo span:nth-child(1) {
@@ -61,17 +72,17 @@
 }
 
 .nav-link {
-
   text-decoration: none;
   color: #f6f0f0;
   font-weight: bold;
   font-size: 1.2rem;
-  padding: .5rem 3rem;
+  padding: 0.5rem 3rem;
   transition: color 0.3s ease;
 }
 
 .nav-link:hover {
-  color: #d4af37;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
 /* Botón de hamburguesa: inicialmente oculto en escritorio */
@@ -94,7 +105,7 @@
   transition: all 0.3s ease-in-out;
 }
 .hamburger:hover span {
-  background-color: #d4af37;
+  background-color: #ffd700;
 }
 
 .search-container {
@@ -181,8 +192,8 @@
   position: relative;
 }
 .user-link:hover {
-  color: #d4af37;
-  /* Cambia el color al pasar el mouse */
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 .user-link .fa-shopping-cart {
   font-size: 1.2em;
@@ -190,7 +201,7 @@
 }
 
 .user-link:hover .fa-shopping-cart {
-  color: #d4af37;
+  color: #ffd700;
 }
 
 /* Opcional: badge para cantidad de pedidos temporales */
@@ -198,16 +209,19 @@
   position: absolute;
   top: -6px;
   right: -8px;
-  background: #d4af37;
-  color: #fff;
+  background: #d52b1e;
+  color: #ffffff;
   font-size: 0.7em;
   border-radius: 50%;
-  padding: 1px 5px;
+  padding: 2px 6px;
   font-weight: bold;
   pointer-events: none;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.suggestions-list{
+.suggestions-list {
   position: absolute;
   top: 100%;
   right: 0;
@@ -219,11 +233,11 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
-.suggestion-item{
+.suggestion-item {
   padding: 5px 10px;
   width: 100%;
   cursor: pointer;
-  list-style:none ;
+  list-style: none;
   color: #333;
   transition: background-color 0.3s ease;
 }
@@ -232,9 +246,9 @@
 }
 /* Estilos para pantallas pequeñas (móviles) */
 @media (max-width: 768px) {
-.search-container{
-  align-self: flex-end;
-}
+  .search-container {
+    align-self: flex-end;
+  }
   .nav-links {
     /* Oculta el menú y lo posiciona fuera de la pantalla */
     position: fixed;
@@ -244,7 +258,7 @@
     padding: 1rem;
     width: 70%;
     height: 100vh;
-    background-color: #3229d3;
+    background: linear-gradient(180deg, #006847 0%, #003d82 50%, #d52b1e 100%);
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -276,5 +290,4 @@
   .hamburger.activo span:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -6px);
   }
-
 }
