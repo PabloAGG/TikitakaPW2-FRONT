@@ -214,12 +214,9 @@ const ProductoDetail = () => {
     }
   };
 
-  const cargarRecomendados = async (seleccionId) => {
-    if (!seleccionId) return;
+  const cargarRecomendados = async () => {
     try {
-      const response = await fetch(
-        `${API_URL}/api/productos?seleccion=${seleccionId}&exclude=${id}&limit=4`
-      );
+      const response = await fetch(`${API_URL}/api/productos/recomendados/${id}?limit=4`);
       if (response.ok) {
         const data = await response.json();
         setRecomendados(data);
@@ -321,7 +318,7 @@ const ProductoDetail = () => {
 
         // Cargar estrellas y calificación del usuario
         await Promise.all([cargarEstrellas(), cargarMiCalificacion(), cargarComentarios()]);
-        await cargarRecomendados(productoData.seleccion);
+        await cargarRecomendados();
       } catch (err) {
         console.error('Error cargando producto:', err);
         setError(err.message);

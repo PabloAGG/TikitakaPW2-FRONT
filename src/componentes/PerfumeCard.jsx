@@ -225,7 +225,7 @@ const ProductoCard = ({ producto, isAdmin = false }) => {
           {ratingLoaded
             ? ratingInfo.total > 0
               ? `${ratingInfo.promedio.toFixed(1)} (${ratingInfo.total})`
-              : 'Sin calificaciones'
+              : '0 (0)'
             : 'Cargando...'}
         </span>
       </div>

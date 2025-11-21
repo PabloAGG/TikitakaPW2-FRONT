@@ -199,6 +199,10 @@ const Header = () => {
         <span />
       </button>
 
+      <Link to="/" className="logo">
+        <img src="/IMG/LogoPrin1.png" alt="Logo" style={{ width: '80px', height: 'auto' }} />
+      </Link>
+
       <nav ref={menuRef} className={`nav-links ${menuAbierto ? 'activo' : ''}`}>
         {isMobile && menuAbierto && searchbarComponent}
         <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}>
